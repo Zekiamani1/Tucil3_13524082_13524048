@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 	"unicode"
 )
 
@@ -100,7 +101,7 @@ func createGrid() *Grid {
 				temp2 = &Grid{Constraint: 0, tipe: TipeGoal, coordinateX: j, coordinateY: i}
 			case input[j] == 'Z':
 				temp2 = &Grid{Constraint: 0, tipe: TipeStart, coordinateX: j, coordinateY: i}
-				// start = temp2
+				start = temp2
 			}
 			grid[i][j] = temp2
 		}
@@ -122,8 +123,11 @@ func createGrid() *Grid {
 			}
 		}
 	}
-	start = grid[0][0]
 	return start
+}
+func (g *Grid) calculateEuclideanDistance(other *Grid) float64 {
+	return math.Sqrt(math.Pow(float64(other.coordinateX)-float64(g.coordinateX), 2) + math.Pow(float64(other.coordinateY)-float64(g.coordinateY), 2))
+
 }
 func (g *Grid) printGrid() {
 	now := g
@@ -149,6 +153,5 @@ func (g *Grid) printGrid() {
 func main() {
 	fmt.Println()
 	start := createGrid()
-	start.printGrid()
-
+	player := Player{position: start}
 }
