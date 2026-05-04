@@ -42,18 +42,24 @@ const (
 	bawah
 )
 
-func (p Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
+func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
+	if p == nil || p.position == nil {
+		return errors.New("player or position is nil")
+	}
 	temp := p.position
-	for temp.tipe != TipeBlock {
+	for temp != nil && temp.tipe != TipeBlock {
 		switch arah {
 		case kiri:
-			temp = p.position.Kiri
+			temp = temp.Kiri
 		case kanan:
-			temp = p.position.Kanan
+			temp = temp.Kanan
 		case atas:
-			temp = p.position.Atas
+			temp = temp.Atas
 		case bawah:
-			temp = p.position.Bawah
+			temp = temp.Bawah
+		}
+		if temp == nil {
+			return errors.New("cannot move: reached boundary")
 		}
 		if temp.Constraint > p.currentConstraint {
 			return errors.New("constraint tidak terpenuhi")
@@ -70,44 +76,79 @@ func createGrid() *Grid {
 	var Y int
 	var start *Grid
 	fmt.Scan(&X, &Y)
-	var now *Grid
-	now = nil
-	for i := 0; i < X+2; i++ {
-		itu := now
+	grid := make([][]*Grid, X)
+	for i := 0; i < X; i++ {
 		var temp string
 		fmt.Scanln(&temp)
 		input := []rune(temp)
-		if len(input) != Y+2 {
-			return nil //salah
+		if len(input) != Y {
+			return nil
 		}
-		for j := 0; j < Y+2; j++ {
+		grid[i] = make([]*Grid, Y)
+		for j := 0; j < Y; j++ {
 			var temp2 *Grid
 			switch {
 			case input[j] == 'X':
-				temp2 = &Grid{Kiri: itu, tipe: TipeBlock}
+				temp2 = &Grid{tipe: TipeBlock}
 			case input[j] == '*':
-				temp2 = &Grid{Kiri: itu, Constraint: 0, tipe: TipeEmpty, coordinateX: j, coordinateY: i}
+				temp2 = &Grid{Constraint: 0, tipe: TipeEmpty, coordinateX: j, coordinateY: i}
 			case unicode.IsNumber(input[j]):
-				temp2 = &Grid{Kiri: itu, Constraint: int(input[i] - '0'), tipe: TipeEmpty, coordinateX: j, coordinateY: i}
+				temp2 = &Grid{Constraint: int(input[i] - '0'), tipe: TipeEmpty, coordinateX: j, coordinateY: i}
 			case input[j] == 'L':
-				temp2 = &Grid{Kiri: itu, Constraint: 0, tipe: TipeLava, coordinateX: j, coordinateY: i}
+				temp2 = &Grid{Constraint: 0, tipe: TipeLava, coordinateX: j, coordinateY: i}
 			case input[j] == 'O':
-				temp2 = &Grid{Kiri: itu, Constraint: 0, tipe: TipeGoal, coordinateX: j, coordinateY: i}
+				temp2 = &Grid{Constraint: 0, tipe: TipeGoal, coordinateX: j, coordinateY: i}
 			case input[j] == 'Z':
-				temp2 = &Grid{Kiri: itu, Constraint: 0, tipe: TipeStart, coordinateX: j, coordinateY: i}
-				start = temp2
+				temp2 = &Grid{Constraint: 0, tipe: TipeStart, coordinateX: j, coordinateY: i}
+				// start = temp2
 			}
-			if itu != nil {
-				itu.Kanan = temp2
-				itu = itu.Kanan
-			} else {
-				itu = temp2
-				now = itu
-			}
-
+			grid[i][j] = temp2
 		}
-		now.Bawah.Atas = now
+	}
+	for i := 0; i < X; i++ {
+		for j := 0; j < Y; j++ {
+			temp2 := grid[i][j]
+			if j > 0 {
+				temp2.Kiri = grid[i][j-1]
+			}
+			if j < Y-1 {
+				temp2.Kanan = grid[i][j+1]
+			}
+			if i > 0 {
+				temp2.Atas = grid[i-1][j]
+			}
+			if i < X-1 {
+				temp2.Bawah = grid[i+1][j]
+			}
+		}
+	}
+	start = grid[0][0]
+	return start
+}
+func (g *Grid) printGrid() {
+	now := g
+	for now != nil {
+		itu := now
+		for itu != nil {
+			switch {
+			case itu.tipe == TipeBlock:
+				fmt.Print("X")
+			case itu.tipe == TipeLava:
+				fmt.Print("L")
+			case itu.tipe == TipeStart:
+				fmt.Print("S")
+			case itu.tipe == TipeEmpty:
+				fmt.Print(itu.Constraint)
+			}
+			itu = itu.Kanan
+		}
+		fmt.Print("\n")
 		now = now.Bawah
 	}
-	return start
+}
+func main() {
+	fmt.Println()
+	start := createGrid()
+	start.printGrid()
+
 }
