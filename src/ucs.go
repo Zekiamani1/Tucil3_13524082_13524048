@@ -2,51 +2,60 @@ package main
 
 import (
 	"sort"
+	"slices"
 )
 
-type ucshelper struct {
+type traversalRecord struct {
 	grid *Grid
 	arah Arah
-	path []ucshelper
+	path *traversalRecord
 }
 
-func (h ucshelper) calculateCost() int {
-	arr := h.path
+func (h traversalRecord) calculateCost() int {
+	parent := h.path
 	total := 0
-	for _, v := range arr {
-		if v.grid == nil {
-			continue
+	for parent != nil {
+		if parent.grid != nil {
+			total += parent.grid.cost
 		}
-		total += v.grid.cost
+		parent = parent.path
 	}
 	total += h.grid.cost
 	return total
 }
-func (p Player) ucs() {
+func (p Player) ucs(end *Grid) {
 	save := p
 	// step := 1
-	queue := make([]ucshelper, 0)
-	current := ucshelper{}
+	queue := make([]traversalRecord, 0)
+	closed := make([]traversalRecord, 0)
+	current := traversalRecord{grid: p.position}
 	for true {
 		for _, v := range Allarah {
 			temp2 := p
 			err := temp2.move(v)
-			if len(current.path) > 0 {
-				if temp2.position == current.path[len(current.path)-1].grid {
-					continue
-				}
-			}
 			if err != nil {
 				continue
 			}
-			queue = append(queue, ucshelper{path: append(current.path, current), grid: temp2.position, arah: v})
+			
+			parent := current
+			newNode := traversalRecord{path: &parent, grid: temp2.position, arah: v}
+			closedIdx := slices.IndexFunc(closed, func(i traversalRecord) bool {
+				return i.grid == temp2.position
+			})
+			if closedIdx != -1 {
+				if closed[closedIdx].calculateCost() <= newNode.calculateCost() {
+					continue
+				}
+			}
+			queue = append(queue, newNode)
 		}
+		closed = append(closed, current)
 		sort.Slice(queue, func(i, j int) bool {
 			return queue[i].calculateCost() < queue[j].calculateCost()
 		})
 		p.position = queue[0].grid
 		current = queue[0]
-		if p.position.tipe == TipeGoal {
+		if p.position == end {
 			current.printucspath(save)
 			return
 		}
@@ -54,19 +63,25 @@ func (p Player) ucs() {
 	}
 }
 
-func (u ucshelper) printucspath(player Player) {
-	for i := 1; i < len(u.path); i++ {
+func (u traversalRecord) printucspath(player Player) {
+	parent := u.path
+	var chosenPath []traversalRecord
+	for parent != nil {
+		chosenPath = append([]traversalRecord{*parent}, chosenPath...)
+		parent = parent.path
+	}
+	for i := 0; i < len(chosenPath); i++ {
 		player.position.tipe = TipeEmpty
-		player.move(u.path[i].arah)
+		player.move(chosenPath[i].arah)
 		player.position.tipe = TipeStart
 		println()
-		println(u.path[i].arah)
+		println(arahToString(chosenPath[i].arah))
 		peta.printGrid()
 	}
 	player.position.tipe = TipeEmpty
 	player.move(u.arah)
 	player.position.tipe = TipeStart
 	println()
-	println(u.arah)
+	println(arahToString(u.arah))
 	peta.printGrid()
 }

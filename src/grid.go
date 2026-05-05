@@ -52,6 +52,20 @@ var Allarah = []Arah{
 	bawah,
 }
 
+func arahToString(arah Arah) string {
+	switch arah {
+		case kiri:
+			return "kiri"
+		case kanan:
+			return "kanan"
+		case bawah:
+			return "bawah"
+		case atas:
+			return "atas"
+	}
+	return "arah invalid"
+}
+
 func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 	if p == nil || p.position == nil {
 		return errors.New("player or position is nil")
@@ -99,14 +113,14 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 		// 	return errors.New("constraint tidak terpenuhi")
 		// }
 		p.position = temp
-		p.currentConstraint += p.position.Constraint
-		temp.Constraint = 0
+		// p.currentConstraint += p.position.Constraint
+		// temp.Constraint = -1
 		p.cost += p.position.cost
 		canstop = true
 	}
 	return nil
 }
-func createGrid() (firstgrid *Grid, start *Grid, end *Grid) {
+func createGrid() (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid) {
 	var X int
 	var Y int
 	fmt.Scan(&X, &Y)
@@ -116,7 +130,7 @@ func createGrid() (firstgrid *Grid, start *Grid, end *Grid) {
 		fmt.Scanln(&temp)
 		input := []rune(temp)
 		if len(input) != Y {
-			return nil, nil, nil
+			return nil, nil, nil, nil
 		}
 		grid[i] = make([]*Grid, Y)
 		for j := 0; j < Y; j++ {
@@ -125,19 +139,21 @@ func createGrid() (firstgrid *Grid, start *Grid, end *Grid) {
 			case input[j] == 'X':
 				temp2 = &Grid{tipe: TipeBlock}
 			case input[j] == '*':
-				temp2 = &Grid{Constraint: 0, tipe: TipeEmpty, coordinateX: j, coordinateY: i}
+				temp2 = &Grid{Constraint: -1, tipe: TipeEmpty, coordinateX: j, coordinateY: i}
 			case unicode.IsNumber(input[j]):
-				temp2 = &Grid{Constraint: int(input[i] - '0'), tipe: TipeEmpty, coordinateX: j, coordinateY: i}
+				temp2 = &Grid{Constraint: int(input[j] - '0'), tipe: TipeEmpty, coordinateX: j, coordinateY: i}
+				constraint = append(constraint, temp2)
 			case input[j] == 'L':
-				temp2 = &Grid{Constraint: 0, tipe: TipeLava, coordinateX: j, coordinateY: i}
+				temp2 = &Grid{Constraint: -1, tipe: TipeLava, coordinateX: j, coordinateY: i}
 			case input[j] == 'O':
-				temp2 = &Grid{Constraint: 0, tipe: TipeGoal, coordinateX: j, coordinateY: i}
+				temp2 = &Grid{Constraint: -1, tipe: TipeGoal, coordinateX: j, coordinateY: i}
 				end = temp2
 			case input[j] == 'Z':
-				temp2 = &Grid{Constraint: 0, tipe: TipeStart, coordinateX: j, coordinateY: i}
+				temp2 = &Grid{Constraint: -1, tipe: TipeStart, coordinateX: j, coordinateY: i}
 				start = temp2
 			}
 			grid[i][j] = temp2
+
 		}
 	}
 	for i := 0; i < X; i++ {
@@ -187,7 +203,11 @@ func (g *Grid) printGrid() {
 			case itu.tipe == TipeStart:
 				fmt.Print("Z")
 			case itu.tipe == TipeEmpty:
-				fmt.Print(itu.Constraint)
+				if itu.Constraint != -1 {
+					fmt.Print(itu.Constraint)
+				} else {
+					fmt.Print(" ")
+				}
 			}
 			itu = itu.Kanan
 		}
@@ -196,11 +216,11 @@ func (g *Grid) printGrid() {
 	}
 }
 func main() {
-	firstgrid, start, _ := createGrid()
+	firstgrid, start, end, _ := createGrid()
 	player := Player{position: start}
 	peta = firstgrid
-	player.ucs()
+	// player.astar(end)
+	player.ucs(end)
 	// println()
 	// firstgrid.printGrid()
-
 }

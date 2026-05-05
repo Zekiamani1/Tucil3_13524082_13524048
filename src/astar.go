@@ -1,22 +1,18 @@
 package main
 
 import (
-	"math"
 	"sort"
 	"slices"
 )
 
-func (h *ucshelper) calculateFCost(other *Grid) float64 {
-	if h.grid == nil {
-		return math.MaxFloat64
-	}
-	arr := h.path
+func (h *traversalRecord) calculateFCost(other *Grid) float64 {
+	parent := h.path
 	total := 0
-	for _, v := range arr {
-		if v.grid == nil {
-			continue
+	for parent != nil {
+		if parent.grid != nil {
+			total += parent.grid.cost
 		}
-		total += v.grid.cost
+		parent = parent.path
 	}
 	total += h.grid.cost
 	totalF := float64(total) + h.grid.calculateEuclideanDistance(other)
@@ -26,10 +22,10 @@ func (h *ucshelper) calculateFCost(other *Grid) float64 {
 func (p Player) astar(end *Grid) {
 	save := p
 	// step := 1
-	open := make([]ucshelper, 0)
-	open = append(open, ucshelper{path: nil, grid: p.position})
-	closed := make([]ucshelper, 0)
-	current := ucshelper{}
+	open := make([]traversalRecord, 0)
+	open = append(open, traversalRecord{path: nil, grid: p.position})
+	closed := make([]traversalRecord, 0)
+	current := traversalRecord{}
 	for len(open) > 0 {
 		p.position = open[0].grid
 		current = open[0]
@@ -46,9 +42,10 @@ func (p Player) astar(end *Grid) {
 				continue
 			} 
 
-			newNode := ucshelper{path: append(current.path, current), grid: temp2.position, arah: v}
+			parent := current
+			newNode := traversalRecord{path: &parent, grid: temp2.position, arah: v}
 
-			openIdx := slices.IndexFunc(open, func(i ucshelper) bool {
+			openIdx := slices.IndexFunc(open, func(i traversalRecord) bool {
 				return i.grid == temp2.position
 			})
 			if openIdx != -1 {
@@ -59,7 +56,7 @@ func (p Player) astar(end *Grid) {
 				}
 			}
 
-			closedIdx := slices.IndexFunc(closed, func(i ucshelper) bool {
+			closedIdx := slices.IndexFunc(closed, func(i traversalRecord) bool {
 				return i.grid == temp2.position
 			})
 			if closedIdx != -1 {
@@ -76,19 +73,25 @@ func (p Player) astar(end *Grid) {
 	}
 }
 
-func (u *ucshelper) printastarpath(player Player) {
-	for i := 1; i < len(u.path); i++ {
+func (u *traversalRecord) printastarpath(player Player) {
+	parent := u.path
+	var chosenPath []traversalRecord
+	for parent != nil {
+		chosenPath = append([]traversalRecord{*parent}, chosenPath...)
+		parent = parent.path
+	}
+	for i := 0; i < len(chosenPath); i++ {
 		player.position.tipe = TipeEmpty
-		player.move(u.path[i].arah)
+		player.move(chosenPath[i].arah)
 		player.position.tipe = TipeStart
 		println()
-		println(u.path[i].arah)
+		println(arahToString(chosenPath[i].arah))
 		peta.printGrid()
 	}
 	player.position.tipe = TipeEmpty
 	player.move(u.arah)
 	player.position.tipe = TipeStart
 	println()
-	println(u.arah)
+	println(arahToString(u.arah))
 	peta.printGrid()
 }
