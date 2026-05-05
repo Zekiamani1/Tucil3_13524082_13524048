@@ -41,5 +41,6 @@ func (p *Player) bgfs(end *Grid) {
 		println()
 		peta.printGrid()
 		p.position.tipe = TipeEmpty
+		step++
 	}
 }

@@ -137,6 +137,14 @@ func createGrid() (firstgrid *Grid, start *Grid, end *Grid) {
 	}
 	for i := 0; i < X; i++ {
 		for j := 0; j < Y; j++ {
+			var temp int
+			fmt.Scan(&temp)
+			grid[i][j].cost = temp
+		}
+	}
+
+	for i := 0; i < X; i++ {
+		for j := 0; j < Y; j++ {
 			temp2 := grid[i][j]
 			if j > 0 {
 				temp2.Kiri = grid[i][j-1]
@@ -183,10 +191,10 @@ func (g *Grid) printGrid() {
 	}
 }
 func main() {
-	firstgrid, start, end := createGrid()
+	firstgrid, start, _ := createGrid()
 	player := Player{position: start}
 	peta = firstgrid
-	player.bgfs(end)
+	player.ucs()
 	// println()
 	// firstgrid.printGrid()
 
