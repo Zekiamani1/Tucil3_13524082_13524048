@@ -1,13 +1,14 @@
-package main
+package core
 
 import (
 	"errors"
 	"fmt"
 	"math"
 	"unicode"
+	"sort"
 )
 
-var peta *Grid
+var Peta *Grid
 
 type Tipe int
 
@@ -24,16 +25,16 @@ type Grid struct {
 	coordinateY int
 	tipe        Tipe
 	Constraint  int
-	cost        int
+	Cost        int
 	Kiri        *Grid
 	Kanan       *Grid
 	Atas        *Grid
 	Bawah       *Grid
 }
 type Player struct {
-	position          *Grid
-	cost              int
-	currentConstraint int
+	Position          *Grid
+	Cost              int
+	CurrentConstraint int
 }
 
 type Arah int
@@ -67,10 +68,10 @@ func arahToString(arah Arah) string {
 }
 
 func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
-	if p == nil || p.position == nil {
-		return errors.New("player or position is nil")
+	if p == nil || p.Position == nil {
+		return errors.New("player or Position is nil")
 	}
-	temp := p.position
+	temp := p.Position
 	canstop := false
 	for temp != nil {
 		stop := false
@@ -112,15 +113,15 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 		// if temp.Constraint > p.currentConstraint {
 		// 	return errors.New("constraint tidak terpenuhi")
 		// }
-		p.position = temp
-		// p.currentConstraint += p.position.Constraint
+		p.Position = temp
+		// p.currentConstraint += p.Position.Constraint
 		// temp.Constraint = -1
-		p.cost += p.position.cost
+		p.Cost += p.Position.Cost
 		canstop = true
 	}
 	return nil
 }
-func createGrid() (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid) {
+func CreateGrid() (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid) {
 	var X int
 	var Y int
 	fmt.Scan(&X, &Y)
@@ -153,14 +154,16 @@ func createGrid() (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid) 
 				start = temp2
 			}
 			grid[i][j] = temp2
-
+			sort.Slice(constraint, func(i, j int) bool {
+				return constraint[i].Constraint < constraint[j].Constraint
+			})
 		}
 	}
 	for i := 0; i < X; i++ {
 		for j := 0; j < Y; j++ {
 			var temp int
 			fmt.Scan(&temp)
-			grid[i][j].cost = temp
+			grid[i][j].Cost = temp
 		}
 	}
 
@@ -215,12 +218,12 @@ func (g *Grid) printGrid() {
 		now = now.Bawah
 	}
 }
-func main() {
-	firstgrid, start, end, _ := createGrid()
-	player := Player{position: start}
-	peta = firstgrid
-	// player.astar(end)
-	player.ucs(end)
-	// println()
-	// firstgrid.printGrid()
-}
+// func main() {
+// 	firstgrid, start, end, _ := CreateGrid()
+// 	player := Player{Position: start}
+// 	Peta = firstgrid
+// 	// player.astar(end)
+// 	player.ucs(end)
+// 	// println()
+// 	// firstgrid.printGrid()
+// }

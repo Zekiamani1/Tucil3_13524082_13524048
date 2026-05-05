@@ -1,8 +1,8 @@
-package main
+package core
 
 import "math"
 
-func (p *Player) bgfs(end *Grid) {
+func (p *Player) GBFS(end *Grid) {
 	step := 1
 	for true {
 		neighbor := make([]*Grid, 0, 4)
@@ -14,7 +14,7 @@ func (p *Player) bgfs(end *Grid) {
 				neighbor = append(neighbor, nil)
 				continue
 			}
-			neighbor = append(neighbor, temp2.position)
+			neighbor = append(neighbor, temp2.Position)
 		}
 		var choose int
 		min := math.MaxFloat64
@@ -28,19 +28,19 @@ func (p *Player) bgfs(end *Grid) {
 				choose = i
 			}
 		}
-		p.position.tipe = TipeEmpty
+		p.Position.tipe = TipeEmpty
 		p.move(Allarah[choose])
-		if p.position.tipe == TipeGoal {
+		if p.Position.tipe == TipeGoal {
 			println("step ", step, Allarah[choose])
-			p.position.tipe = TipeStart
+			p.Position.tipe = TipeStart
 			println()
-			peta.printGrid()
+			Peta.printGrid()
 			return
 		}
-		p.position.tipe = TipeStart
+		p.Position.tipe = TipeStart
 		println()
-		peta.printGrid()
-		p.position.tipe = TipeEmpty
+		Peta.printGrid()
+		p.Position.tipe = TipeEmpty
 		step++
 	}
 }
