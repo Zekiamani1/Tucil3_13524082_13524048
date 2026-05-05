@@ -57,6 +57,7 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 		return errors.New("player or position is nil")
 	}
 	temp := p.position
+	canstop := false
 	for temp != nil {
 		stop := false
 		switch arah {
@@ -86,18 +87,22 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 			temp = temp.Bawah
 		}
 		if stop {
+			if !canstop {
+				return errors.New("tembok le")
+			}
 			break
 		}
 		if temp == nil {
 			return errors.New("cannot move: reached boundary")
 		}
-		if temp.Constraint > p.currentConstraint {
-			return errors.New("constraint tidak terpenuhi")
-		}
+		// if temp.Constraint > p.currentConstraint {
+		// 	return errors.New("constraint tidak terpenuhi")
+		// }
 		p.position = temp
 		p.currentConstraint += p.position.Constraint
 		temp.Constraint = 0
 		p.cost += p.position.cost
+		canstop = true
 	}
 	return nil
 }

@@ -1,13 +1,11 @@
 package main
 
 import (
-	"math"
 	"sort"
 )
 
 type ucshelper struct {
 	grid *Grid
-	cost int
 	arah Arah
 	path []ucshelper
 }
@@ -33,8 +31,12 @@ func (p Player) ucs() {
 		for _, v := range Allarah {
 			temp2 := p
 			err := temp2.move(v)
+			if len(current.path) > 0 {
+				if temp2.position == current.path[len(current.path)-1].grid {
+					continue
+				}
+			}
 			if err != nil {
-				queue = append(queue, ucshelper{path: nil, grid: nil, cost: math.MaxInt64, arah: v})
 				continue
 			}
 			queue = append(queue, ucshelper{path: append(current.path, current), grid: temp2.position, arah: v})
