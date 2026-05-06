@@ -3,11 +3,9 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"image/color"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
@@ -16,7 +14,8 @@ import (
 	"bufio"
 	"io"
 	"log"
-	// 	"stima/core"
+	// "stima/core"
+	"stima/GUI"
 )
 
 // func main() {
@@ -97,13 +96,6 @@ import (
 // 	} else {
 // 		fmt.Println("result null!")
 // 	}
-
-// 	myApp := app.New()
-// 	myWindow := myApp.NewWindow("Hello")
-
-// 	myWindow.SetContent(widget.NewLabel("Hello Fyne!"))
-
-// 	myWindow.ShowAndRun()
 // }
 
 func parseInput(r io.Reader) (int, int, []string, [][]int, error) {
@@ -135,98 +127,41 @@ func parseInput(r io.Reader) (int, int, []string, [][]int, error) {
 }
 
 func main() {
-	var X, Y int
-	var matrix []string
-	var costMatrix [][]int
-	var err error
+	// var firstgrid, startgrid, endgrid *core.Grid
+	// var constraint []*core.Grid
 
 	fmt.Println("START")
 
 	myApp := app.New()
-	myWindow := myApp.NewWindow("STIMMER101")
+	mainRunner := myApp.NewWindow("STIMMER101")
 
-	textInput := widget.NewMultiLineEntry()
-	textInput.SetPlaceHolder("enter text...")
-
-	fileLabel := widget.NewLabel("No file selected")
-	var fileContent string
-
-	openFileBtn := widget.NewButton("Choose File", func() {
-		dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
-			if err != nil {
-				dialog.ShowError(err, myWindow)
-				return
-			}
-			if reader == nil {
-				return
-			}
-			defer reader.Close()
-
-			data, err := io.ReadAll(reader)
-			if err != nil {
-				dialog.ShowError(err, myWindow)
-				return
-			}
-
-			fileContent = string(data)
-			fileLabel.SetText(reader.URI().Name())
-		}, myWindow).Show()
-	})
-
-	submitBtn := widget.NewButton("Submit", func() {
-		var input []byte
-
-		if textInput.Text != "" {
-			input = []byte(textInput.Text)
-		} else if fileContent != "" {
-			input = []byte(fileContent)
-		} else {
-			dialog.ShowInformation("Error", "No input provided", myWindow)
-			return
-		}
-
-		// parser
-		X, Y, matrix, costMatrix, err = parseInput(bytes.NewReader(input))
+	inputPanel := GUI.NewInputPanel(&mainRunner, func (input []byte){
+		X, Y, matrix, costMatrix, err := parseInput(bytes.NewReader(input))
 		if err != nil {
-			dialog.ShowError(err, myWindow)
+			dialog.ShowError(err, mainRunner)
 			return
 		}
 
-		log.Println(X, Y, matrix, costMatrix)
-		dialog.ShowInformation("Success", "Input submitted!", myWindow)
+		// 	firstgrid, startgrid, endgrid, _ := core.CreateGrid(X, Y, matrix, costMatrix)
+		
+		log.Println(X, Y)
+		log.Println(matrix)
+		log.Println(costMatrix)
+
 	})
 
-	input := container.NewVBox(
-		widget.NewLabel("Multiline Input:"),
-		textInput,
-
-		widget.NewSeparator(),
-
-		widget.NewLabel("Or load from file:"),
-		openFileBtn,
-		fileLabel,
-
-		widget.NewSeparator(),
-
-		submitBtn,
-	)
-	input.Resize(fyne.NewSize(250, 250))
-
-	gap := canvas.NewRectangle(color.Transparent)
-	gap.SetMinSize(fyne.NewSize(20, 0))
-
-	mainContent := container.NewHBox(
-		gap,
+	thewholewindow := container.NewHBox(
+		GUI.MakeGap(20, 0),
 		container.NewCenter(
 			container.NewGridWrap(
 				fyne.NewSize(250, 250),
-				input,
+				inputPanel.View(),
 		)),
-		gap,
+		GUI.MakeGap(20, 0),
 		container.NewCenter(widget.NewLabel("Input here")),
 	)
 
-	myWindow.SetContent(mainContent)
-	myWindow.Resize(fyne.NewSize(1000, 900))
-	myWindow.ShowAndRun()
+	mainRunner.SetContent(thewholewindow)
+	mainRunner.Resize(fyne.NewSize(1000, 900))
+	mainRunner.ShowAndRun()
 }
