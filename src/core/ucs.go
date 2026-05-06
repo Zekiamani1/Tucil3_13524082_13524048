@@ -4,11 +4,11 @@ import (
 	"slices"
 )
 
-func (p Player) UCS(end *Grid) *traversalRecord {
+func (p Player) UCS(end *Grid) *TraversalRecord {
 	// step := 1
-	queue := make([]traversalRecord, 0)
-	closed := make([]traversalRecord, 0)
-	current := traversalRecord{grid: p.Position}
+	queue := make([]TraversalRecord, 0)
+	closed := make([]TraversalRecord, 0)
+	current := TraversalRecord{grid: p.Position}
 	for true {
 		for _, v := range Allarah {
 			temp2 := p
@@ -18,8 +18,8 @@ func (p Player) UCS(end *Grid) *traversalRecord {
 			}
 			
 			parent := current
-			newNode := traversalRecord{path: &parent, grid: temp2.Position, arah: v}
-			closedIdx := slices.IndexFunc(closed, func(i traversalRecord) bool {
+			newNode := TraversalRecord{path: &parent, grid: temp2.Position, arah: v}
+			closedIdx := slices.IndexFunc(closed, func(i TraversalRecord) bool {
 				return i.grid == temp2.Position
 			})
 			if closedIdx != -1 {

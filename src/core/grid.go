@@ -8,8 +8,6 @@ import (
 	"sort"
 )
 
-var Peta *Grid
-
 type Tipe int
 
 const (
@@ -121,14 +119,10 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 	}
 	return nil
 }
-func CreateGrid() (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid) {
-	var X int
-	var Y int
-	fmt.Scan(&X, &Y)
+func CreateGrid(X, Y int, matrix []string, costMatrix [][]int) (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid) {
 	grid := make([][]*Grid, X)
 	for i := 0; i < X; i++ {
-		var temp string
-		fmt.Scanln(&temp)
+		temp := matrix[i]
 		input := []rune(temp)
 		if len(input) != Y {
 			return nil, nil, nil, nil
@@ -138,7 +132,7 @@ func CreateGrid() (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid) 
 			var temp2 *Grid
 			switch {
 			case input[j] == 'X':
-				temp2 = &Grid{tipe: TipeBlock}
+				temp2 = &Grid{tipe: TipeBlock, coordinateX: j, coordinateY: i}
 			case input[j] == '*':
 				temp2 = &Grid{Constraint: -1, tipe: TipeEmpty, coordinateX: j, coordinateY: i}
 			case unicode.IsNumber(input[j]):
@@ -152,18 +146,21 @@ func CreateGrid() (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid) 
 			case input[j] == 'Z':
 				temp2 = &Grid{Constraint: -1, tipe: TipeStart, coordinateX: j, coordinateY: i}
 				start = temp2
+			default:
+				temp2 = &Grid{Constraint: -1, tipe: TipeStart, coordinateX: j, coordinateY: i}
 			}
 			grid[i][j] = temp2
-			sort.Slice(constraint, func(i, j int) bool {
-				return constraint[i].Constraint < constraint[j].Constraint
-			})
 		}
 	}
+	if start == nil || end == nil {
+		return nil, nil, nil, nil
+	}
+	sort.Slice(constraint, func(i, j int) bool {
+		return constraint[i].Constraint < constraint[j].Constraint
+	})
 	for i := 0; i < X; i++ {
 		for j := 0; j < Y; j++ {
-			var temp int
-			fmt.Scan(&temp)
-			grid[i][j].Cost = temp
+			grid[i][j].Cost = costMatrix[i][j]
 		}
 	}
 
@@ -191,7 +188,7 @@ func (g *Grid) calculateEuclideanDistance(other *Grid) float64 {
 	return math.Sqrt(math.Pow(float64(other.coordinateX)-float64(g.coordinateX), 2) + math.Pow(float64(other.coordinateY)-float64(g.coordinateY), 2))
 
 }
-func (g *Grid) printGrid() {
+func (g *Grid) PrintGrid() {
 	now := g
 	for now != nil {
 		itu := now

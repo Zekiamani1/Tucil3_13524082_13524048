@@ -1,12 +1,12 @@
 package core
 
-type traversalRecord struct {
+type TraversalRecord struct {
 	grid *Grid
 	arah Arah
-	path *traversalRecord
+	path *TraversalRecord
 }
 
-func (h traversalRecord) calculateCost() int {
+func (h TraversalRecord) calculateCost() int {
 	parent := h.path
 	total := 0
 	for parent != nil {
@@ -20,7 +20,7 @@ func (h traversalRecord) calculateCost() int {
 }
 
 
-func (h *traversalRecord) calculateFCost(other *Grid) float64 {
+func (h *TraversalRecord) calculateFCost(other *Grid) float64 {
 	parent := h.path
 	total := 0
 	for parent != nil {
@@ -34,11 +34,11 @@ func (h *traversalRecord) calculateFCost(other *Grid) float64 {
 	return totalF
 }
 
-func (u *traversalRecord) PrintResultPath(player Player, topleft *Grid) {
+func (u *TraversalRecord) PrintResultPath(player Player, topleft *Grid) {
 	parent := u.path
-	var chosenPath []traversalRecord
+	var chosenPath []TraversalRecord
 	for parent != nil {
-		chosenPath = append([]traversalRecord{*parent}, chosenPath...)
+		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
 		parent = parent.path
 	}
 	for i := 0; i < len(chosenPath); i++ {
@@ -47,12 +47,12 @@ func (u *traversalRecord) PrintResultPath(player Player, topleft *Grid) {
 		player.Position.tipe = TipeStart
 		println()
 		println(arahToString(chosenPath[i].arah))
-		topleft.printGrid()
+		topleft.PrintGrid()
 	}
 	player.Position.tipe = TipeEmpty
 	player.move(u.arah)
 	player.Position.tipe = TipeStart
 	println()
 	println(arahToString(u.arah))
-	topleft.printGrid()
+	topleft.PrintGrid()
 }

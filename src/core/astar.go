@@ -5,12 +5,12 @@ import (
 	"slices"
 )
 
-func (p Player) ASTAR(end *Grid) *traversalRecord {
+func (p Player) ASTAR(end *Grid) *TraversalRecord {
 	// step := 1
-	open := make([]traversalRecord, 0)
-	open = append(open, traversalRecord{path: nil, grid: p.Position})
-	closed := make([]traversalRecord, 0)
-	current := traversalRecord{}
+	open := make([]TraversalRecord, 0)
+	open = append(open, TraversalRecord{path: nil, grid: p.Position})
+	closed := make([]TraversalRecord, 0)
+	current := TraversalRecord{}
 	for len(open) > 0 {
 		p.Position = open[0].grid
 		current = open[0]
@@ -27,9 +27,9 @@ func (p Player) ASTAR(end *Grid) *traversalRecord {
 			} 
 
 			parent := current
-			newNode := traversalRecord{path: &parent, grid: temp2.Position, arah: v}
+			newNode := TraversalRecord{path: &parent, grid: temp2.Position, arah: v}
 
-			openIdx := slices.IndexFunc(open, func(i traversalRecord) bool {
+			openIdx := slices.IndexFunc(open, func(i TraversalRecord) bool {
 				return i.grid == temp2.Position
 			})
 			if openIdx != -1 {
@@ -40,7 +40,7 @@ func (p Player) ASTAR(end *Grid) *traversalRecord {
 				}
 			}
 
-			closedIdx := slices.IndexFunc(closed, func(i traversalRecord) bool {
+			closedIdx := slices.IndexFunc(closed, func(i TraversalRecord) bool {
 				return i.grid == temp2.Position
 			})
 			if closedIdx != -1 {

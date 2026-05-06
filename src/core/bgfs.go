@@ -2,7 +2,7 @@ package core
 
 import "math"
 
-func (p *Player) GBFS(end *Grid) {
+func (p *Player) GBFS(topleft, end *Grid) {
 	step := 1
 	for true {
 		neighbor := make([]*Grid, 0, 4)
@@ -34,12 +34,12 @@ func (p *Player) GBFS(end *Grid) {
 			println("step ", step, Allarah[choose])
 			p.Position.tipe = TipeStart
 			println()
-			Peta.printGrid()
+			topleft.PrintGrid()
 			return
 		}
 		p.Position.tipe = TipeStart
 		println()
-		Peta.printGrid()
+		topleft.PrintGrid()
 		p.Position.tipe = TipeEmpty
 		step++
 	}
