@@ -119,13 +119,14 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 	}
 	return nil
 }
-func CreateGrid(X, Y int, matrix []string, costMatrix [][]int) (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid) {
+func CreateGrid(X, Y int, matrix []string, costMatrix [][]int) (firstgrid *Grid, start *Grid, end *Grid, constraint []*Grid, err error) {
 	grid := make([][]*Grid, X)
+	err = nil
 	for i := 0; i < X; i++ {
 		temp := matrix[i]
 		input := []rune(temp)
 		if len(input) != Y {
-			return nil, nil, nil, nil
+			return nil, nil, nil, nil, errors.New("Input length invalid")
 		}
 		grid[i] = make([]*Grid, Y)
 		for j := 0; j < Y; j++ {
@@ -152,8 +153,11 @@ func CreateGrid(X, Y int, matrix []string, costMatrix [][]int) (firstgrid *Grid,
 			grid[i][j] = temp2
 		}
 	}
-	if start == nil || end == nil {
-		return nil, nil, nil, nil
+	if start == nil {
+		return nil, nil, nil, nil, errors.New("Input is invalid: missing player tile")
+	}
+	if end == nil {
+		return nil, nil, nil, nil, errors.New("Input is invalid: missing goal tile")
 	}
 	sort.Slice(constraint, func(i, j int) bool {
 		return constraint[i].Constraint < constraint[j].Constraint
@@ -214,6 +218,10 @@ func (g *Grid) PrintGrid() {
 		fmt.Print("\n")
 		now = now.Bawah
 	}
+}
+
+func (this *Grid) GetGridType() Tipe {
+	return this.tipe
 }
 // func main() {
 // 	firstgrid, start, end, _ := CreateGrid()

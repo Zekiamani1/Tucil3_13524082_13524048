@@ -8,13 +8,10 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/widget"
+	// "fyne.io/fyne/v2/widget"
 
-	// 	"os"
-	"bufio"
-	"io"
 	"log"
-	// "stima/core"
+	"stima/core"
 	"stima/GUI"
 )
 
@@ -98,37 +95,20 @@ import (
 // 	}
 // }
 
-func parseInput(r io.Reader) (int, int, []string, [][]int, error) {
-	reader := bufio.NewReader(r)
-
-	var X, Y int
-	if _, err := fmt.Fscan(reader, &X, &Y); err != nil {
-		return 0, 0, nil, nil, err
-	}
-
-	matrix := make([]string, X)
-	for i := 0; i < X; i++ {
-		if _, err := fmt.Fscan(reader, &matrix[i]); err != nil {
-			return 0, 0, nil, nil, err
-		}
-	}
-
-	costMatrix := make([][]int, X)
-	for i := 0; i < X; i++ {
-		costMatrix[i] = make([]int, Y)
-		for j := 0; j < Y; j++ {
-			if _, err := fmt.Fscan(reader, &costMatrix[i][j]); err != nil {
-				return 0, 0, nil, nil, err
-			}
-		}
-	}
-
-	return X, Y, matrix, costMatrix, nil
+type MainGrid struct {
+	X int
+	Y int
+	firstgrid *core.Grid
+	playergrid *core.Grid
+	endgrid *core.Grid
+	constraint []*core.Grid
 }
 
 func main() {
 	// var firstgrid, startgrid, endgrid *core.Grid
 	// var constraint []*core.Grid
+	var peta MainGrid
+	mainPanel := container.NewCenter(container.NewStack())
 
 	fmt.Println("START")
 
@@ -136,18 +116,24 @@ func main() {
 	mainRunner := myApp.NewWindow("STIMMER101")
 
 	inputPanel := GUI.NewInputPanel(&mainRunner, func (input []byte){
-		X, Y, matrix, costMatrix, err := parseInput(bytes.NewReader(input))
+		X, Y, matrix, costMatrix, err := core.ParseInput(bytes.NewReader(input))
+		peta.X = X
+		peta.Y = Y
 		if err != nil {
 			dialog.ShowError(err, mainRunner)
 			return
 		}
 
-		// 	firstgrid, startgrid, endgrid, _ := core.CreateGrid(X, Y, matrix, costMatrix)
+		peta.firstgrid, peta.playergrid, peta.endgrid, peta.constraint, err = core.CreateGrid(X, Y, matrix, costMatrix)
 		
+		if err != nil {
+			dialog.ShowError(err, mainRunner)
+			return
+		}
+		GUI.UpdateMainPanel(X, Y, peta.firstgrid, mainPanel)
 		log.Println(X, Y)
 		log.Println(matrix)
 		log.Println(costMatrix)
-
 	})
 
 	thewholewindow := container.NewHBox(
@@ -158,7 +144,7 @@ func main() {
 				inputPanel.View(),
 		)),
 		GUI.MakeGap(20, 0),
-		container.NewCenter(widget.NewLabel("Input here")),
+		mainPanel,
 	)
 
 	mainRunner.SetContent(thewholewindow)
