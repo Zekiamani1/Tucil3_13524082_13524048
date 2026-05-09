@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-func (p Player) UCS(end *Grid) *TraversalRecord {
+func (p Player) UCS(end *Grid, constraint []*Grid) *TraversalRecord {
 	queue := make([]TraversalRecord, 0)
 	closed := make([]TraversalRecord, 0)
 	current := TraversalRecord{grid: p.Position}
@@ -23,7 +23,7 @@ func (p Player) UCS(end *Grid) *TraversalRecord {
 				return i.grid == temp2.Position
 			})
 			if closedIdx != -1 {
-				if closed[closedIdx].calculateCost() <= newNode.calculateCost() {
+				if closed[closedIdx].calculateCost() <= newNode.calculateCost() && !(closed[closedIdx].constraintNow < newNode.constraintNow) {
 					continue
 				}
 			}
@@ -41,7 +41,7 @@ func (p Player) UCS(end *Grid) *TraversalRecord {
 		p.Position = queue[0].grid
 		p.CurrentConstraint = queue[0].constraintNow
 		current = queue[0]
-		if p.Position == end {
+		if p.Position == end && p.CurrentConstraint > constraint[len(constraint)-1].Constraint {
 			return &current
 		}
 		queue = queue[1:]

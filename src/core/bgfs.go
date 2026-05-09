@@ -1,8 +1,13 @@
 package core
 
-import "math"
+import (
+	"math"
+	"slices"
+)
 
-func (p Player) GBFS(end *Grid) *TraversalRecord {
+func (p Player) GBFS(end *Grid, constraints []*Grid) *TraversalRecord {
+	target := 0
+	constraint := append(constraints, end)
 	current := TraversalRecord{grid: p.Position}
 	for true {
 		neighbor := make([]*Grid, 0, 4)
@@ -21,8 +26,8 @@ func (p Player) GBFS(end *Grid) *TraversalRecord {
 			if n == nil {
 				continue
 			}
-			dist := n.calculateEuclideanDistance(end)
-			if dist < min {
+			dist := n.calculateEuclideanDistance(constraint[target])
+			if dist <= min {
 				min = dist
 				choose = i
 			}
@@ -30,7 +35,13 @@ func (p Player) GBFS(end *Grid) *TraversalRecord {
 		p.move(Allarah[choose])
 		temp := current
 		current = TraversalRecord{grid: p.Position, path: &temp, arah: Allarah[choose]}
-		if p.Position.tipe == TipeGoal {
+		target = slices.IndexFunc(constraint, func(i *Grid) bool {
+			return i.Constraint == p.CurrentConstraint
+		})
+		if target == -1 {
+			target = len(constraint) - 1
+		}
+		if p.Position.tipe == TipeGoal && p.CurrentConstraint > constraint[len(constraint)-2].Constraint {
 			return &current
 		}
 	}

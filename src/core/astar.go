@@ -5,8 +5,9 @@ import (
 	"sort"
 )
 
-func (p Player) ASTAR(end *Grid) *TraversalRecord {
-	// step := 1
+func (p Player) ASTAR(end *Grid, constraints []*Grid) *TraversalRecord {
+	target := 0
+	constraint := append(constraints, end)
 	open := make([]TraversalRecord, 0)
 	open = append(open, TraversalRecord{path: nil, grid: p.Position})
 	closed := make([]TraversalRecord, 0)
@@ -15,7 +16,13 @@ func (p Player) ASTAR(end *Grid) *TraversalRecord {
 		p.Position = open[0].grid
 		p.CurrentConstraint = open[0].constraintNow
 		current = open[0]
-		if p.Position == end {
+		target = slices.IndexFunc(constraint, func(i *Grid) bool {
+			return i.Constraint == p.CurrentConstraint
+		})
+		if target == -1 {
+			target = len(constraint) - 1
+		}
+		if p.Position == end && p.CurrentConstraint > constraint[len(constraint)-2].Constraint {
 			return &current
 		}
 		closed = append(closed, current)
@@ -45,7 +52,7 @@ func (p Player) ASTAR(end *Grid) *TraversalRecord {
 				return i.grid == temp2.Position
 			})
 			if closedIdx != -1 {
-				if closed[closedIdx].calculateCost() <= newNode.calculateCost() {
+				if closed[closedIdx].calculateCost() <= newNode.calculateCost() && !(closed[closedIdx].constraintNow < newNode.constraintNow) {
 					continue
 				}
 			}
@@ -53,7 +60,7 @@ func (p Player) ASTAR(end *Grid) *TraversalRecord {
 			open = append(open, newNode)
 		}
 		sort.Slice(open, func(i, j int) bool {
-			return open[i].calculateFCost(end) < open[j].calculateFCost(end)
+			return open[i].calculateFCost(constraint[target]) < open[j].calculateFCost(constraint[target])
 		})
 	}
 	return nil
