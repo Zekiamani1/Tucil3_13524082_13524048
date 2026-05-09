@@ -30,7 +30,7 @@ func main() {
 
 	inputPanel := GUI.NewInputPanel(&mainWindow, &peta)
 
-	rightPanel := GUI.MakeRightPanel([]string{"GBFS", "UCS", "A*"}, &mainWindow, &peta)
+	GUI.RightPanel = GUI.MakeRightPanel([]string{"GBFS", "UCS", "A*"}, &mainWindow, &peta)
 
 	bg := canvas.NewImageFromFile("../assets/ryo_bocchi.jpg")
 	bg.FillMode = canvas.ImageFillStretch
@@ -52,7 +52,7 @@ func main() {
 		container.NewGridWrap(
 			fyne.NewSize(250, 700),
 			container.NewCenter(
-				rightPanel,
+				GUI.RightPanel,
 			),
 		),
 	)

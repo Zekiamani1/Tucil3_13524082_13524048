@@ -5,11 +5,13 @@ import (
 	"sort"
 )
 
-func (p Player) UCS(end *Grid) *TraversalRecord {
+func (p Player) UCS(end *Grid) (int, *TraversalRecord) {
 	queue := make([]TraversalRecord, 0)
 	closed := make([]TraversalRecord, 0)
 	current := TraversalRecord{grid: p.Position}
+	iteration := 0
 	for true {
+		iteration += 1
 		for _, v := range Allarah {
 			temp2 := p
 			err := temp2.move(v)
@@ -42,9 +44,9 @@ func (p Player) UCS(end *Grid) *TraversalRecord {
 		p.CurrentConstraint = queue[0].constraintNow
 		current = queue[0]
 		if p.Position == end {
-			return &current
+			return iteration, &current
 		}
 		queue = queue[1:]
 	}
-	return nil
+	return 0, nil
 }

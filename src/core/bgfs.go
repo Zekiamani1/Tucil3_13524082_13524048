@@ -2,9 +2,11 @@ package core
 
 import "math"
 
-func (p Player) GBFS(end *Grid) *TraversalRecord {
+func (p Player) GBFS(end *Grid) (int, *TraversalRecord) {
 	current := TraversalRecord{grid: p.Position}
+	iteration := 0
 	for true {
+		iteration += 1
 		neighbor := make([]*Grid, 0, 4)
 		for _, v := range Allarah {
 			temp2 := p
@@ -31,8 +33,8 @@ func (p Player) GBFS(end *Grid) *TraversalRecord {
 		temp := current
 		current = TraversalRecord{grid: p.Position, path: &temp, arah: Allarah[choose]}
 		if p.Position.tipe == TipeGoal {
-			return &current
+			return iteration, &current
 		}
 	}
-	return nil
+	return 0, nil
 }

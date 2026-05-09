@@ -1,8 +1,10 @@
 package GUI
 
 import (
+	"fmt"
 	"image/color"
 	"stima/core"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -11,6 +13,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+var RightPanel fyne.CanvasObject
 var chosenAlgo string
 
 func AlgoChooser(options []string) *widget.RadioGroup {
@@ -20,6 +23,8 @@ func AlgoChooser(options []string) *widget.RadioGroup {
 }
 
 func MakeRightPanel(options []string, window *fyne.Window, peta *core.MainGrid) fyne.CanvasObject {
+	Solution := canvas.NewText("", color.RGBA{255, 240, 89, 255})
+	SolutionDetail := canvas.NewText("", color.RGBA{255, 240, 89, 255})
 	tombolSubmit := widget.NewButton("Submit", func() {
 		if peta == nil {
 			dialog.ShowInformation("Error", "No map yet", *window)
@@ -36,11 +41,25 @@ func MakeRightPanel(options []string, window *fyne.Window, peta *core.MainGrid) 
 		
 		// BACKENDBACKENDBACKENDBACKEND
 		player := core.Player{Position: peta.Playergrid}
-		pathResults := peta.RunAlgo(&player, chosenAlgo)
+		start := time.Now()
+		iteration, pathResults := peta.RunAlgo(&player, chosenAlgo)
+		duration := time.Since(start)
 		if pathResults == nil {
 			dialog.ShowInformation("Error", "Map doesn't have solution", *window)
 			return
 		}
+
+		Solution.Text = fmt.Sprintf("Solution: %s", pathResults.GetDirectionsAsString(true))
+		Solution.TextStyle = fyne.TextStyle{Bold: true}
+		Solution.TextSize = 16
+		Solution.Alignment = fyne.TextAlignCenter
+
+		SolutionDetail.Text = fmt.Sprintf("Time: %s Iteration: %d", duration, iteration)
+		SolutionDetail.TextStyle = fyne.TextStyle{Bold: true}
+		SolutionDetail.TextSize = 16
+		SolutionDetail.Alignment = fyne.TextAlignCenter
+
+		RightPanel.Refresh()
 		pathFrames := pathResults.ToCells(&player, peta.Firstgrid)
 		UpdateMainPanelSolution(pathFrames)
 	})
@@ -53,10 +72,11 @@ func MakeRightPanel(options []string, window *fyne.Window, peta *core.MainGrid) 
 	rightPanel := container.NewVBox(
 		widget.NewLabel("Choose Algorithm"),
 		selection,
-
-		widget.NewSeparator(),
-
+		MakeGap(0,1),
 		tombolSubmit,
+		MakeGap(0,1),
+		Solution,
+		SolutionDetail,
 	)
 
 	return container.NewGridWrap(fyne.NewSize(250, 250), rightPanel)
