@@ -8,26 +8,64 @@ type TraversalRecord struct {
 }
 
 func (h TraversalRecord) calculateCost() int {
-	parent := h.path
-	total := 0
+	parent := &h
+	var chosenPath []TraversalRecord
 	for parent != nil {
-		if parent.grid != nil {
-			total += parent.grid.Cost
-		}
+		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
 		parent = parent.path
+	}
+	total := 0
+	for i, x := range chosenPath {
+		if x.grid != nil {
+			tranvers := x.grid
+			if i != len(chosenPath)-1 {
+				for tranvers != nil && tranvers != chosenPath[i+1].grid {
+					total += tranvers.Cost
+					switch chosenPath[i+1].arah {
+					case kiri:
+						tranvers = tranvers.Kiri
+					case kanan:
+						tranvers = tranvers.Kanan
+					case atas:
+						tranvers = tranvers.Atas
+					case bawah:
+						tranvers = tranvers.Bawah
+					}
+				}
+			}
+		}
 	}
 	total += h.grid.Cost
 	return total
 }
 
-func (h *TraversalRecord) calculateFCost(other *Grid) float64 {
-	parent := h.path
-	total := 0
+func (h TraversalRecord) calculateFCost(other *Grid) float64 {
+	parent := &h
+	var chosenPath []TraversalRecord
 	for parent != nil {
-		if parent.grid != nil {
-			total += parent.grid.Cost
-		}
+		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
 		parent = parent.path
+	}
+	total := 0
+	for i, x := range chosenPath {
+		if x.grid != nil {
+			tranvers := x.grid
+			if i != len(chosenPath)-1 {
+				for tranvers != nil && tranvers != chosenPath[i+1].grid {
+					total += tranvers.Cost
+					switch chosenPath[i+1].arah {
+					case kiri:
+						tranvers = tranvers.Kiri
+					case kanan:
+						tranvers = tranvers.Kanan
+					case atas:
+						tranvers = tranvers.Atas
+					case bawah:
+						tranvers = tranvers.Bawah
+					}
+				}
+			}
+		}
 	}
 	total += h.grid.Cost
 	totalF := float64(total) + h.grid.calculateEuclideanDistance(other)
@@ -46,13 +84,15 @@ func (u *TraversalRecord) PrintResultPath(player Player, topleft *Grid) {
 		player.move(chosenPath[i].arah)
 		player.Position.tipe = TipeStart
 		println()
-		println(arahToString(chosenPath[i].arah))
+		println("arah: ", arahToString(chosenPath[i].arah))
+		println("Cost saat ini: ", chosenPath[i].calculateCost())
 		topleft.PrintGrid()
 	}
 	player.Position.tipe = TipeEmpty
 	player.move(u.arah)
 	player.Position.tipe = TipeStart
 	println()
-	println(arahToString(u.arah))
+	println("arah: ", arahToString(u.arah))
+	println("Cost saat ini: ", u.calculateCost())
 	topleft.PrintGrid()
 }
