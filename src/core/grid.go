@@ -118,7 +118,10 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 		if temp == nil {
 			return errors.New("cannot move: reached boundary")
 		}
-		if temp.Constraint+1 > p.CurrentConstraint {
+		if temp.tipe == TipeLava {
+			return errors.New("lava jangan lewat sini")
+		}
+		if temp.Constraint > p.CurrentConstraint+1 {
 			return errors.New("constraint tidak terpenuhi")
 		}
 		p.Position = temp
