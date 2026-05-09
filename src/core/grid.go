@@ -29,6 +29,16 @@ type Grid struct {
 	Atas        *Grid
 	Bawah       *Grid
 }
+
+type MainGrid struct {
+	X int
+	Y int
+	Firstgrid *Grid
+	Playergrid *Grid
+	Endgrid *Grid
+	Constraint []*Grid
+}
+
 type Player struct {
 	Position          *Grid
 	Cost              int

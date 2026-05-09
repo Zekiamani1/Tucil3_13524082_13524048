@@ -1,18 +1,18 @@
 package main
 
 import (
-	"bytes"
+	// "bytes"
 	"fmt"
-
+	"image/color"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog"
+	// "fyne.io/fyne/v2/dialog"
 	// "fyne.io/fyne/v2/widget"
-
-	"log"
-	"stima/core"
+	// "log"
 	"stima/GUI"
+	"stima/core"
 )
 
 // func main() {
@@ -95,59 +95,53 @@ import (
 // 	}
 // }
 
-type MainGrid struct {
-	X int
-	Y int
-	firstgrid *core.Grid
-	playergrid *core.Grid
-	endgrid *core.Grid
-	constraint []*core.Grid
-}
-
 func main() {
 	// var firstgrid, startgrid, endgrid *core.Grid
 	// var constraint []*core.Grid
-	var peta MainGrid
+	var peta core.MainGrid
 	mainPanel := container.NewCenter(container.NewStack())
-
+	
 	fmt.Println("START")
-
+	
 	myApp := app.New()
-	mainRunner := myApp.NewWindow("STIMMER101")
+	mainWindow := myApp.NewWindow("STIMMER101")
 
-	inputPanel := GUI.NewInputPanel(&mainRunner, func (input []byte){
-		X, Y, matrix, costMatrix, err := core.ParseInput(bytes.NewReader(input))
-		peta.X = X
-		peta.Y = Y
-		if err != nil {
-			dialog.ShowError(err, mainRunner)
-			return
-		}
+	inputPanel := GUI.NewInputPanel(&mainWindow, &peta, mainPanel)
 
-		peta.firstgrid, peta.playergrid, peta.endgrid, peta.constraint, err = core.CreateGrid(X, Y, matrix, costMatrix)
-		
-		if err != nil {
-			dialog.ShowError(err, mainRunner)
-			return
-		}
-		GUI.UpdateMainPanel(X, Y, peta.firstgrid, mainPanel)
-		log.Println(X, Y)
-		log.Println(matrix)
-		log.Println(costMatrix)
-	})
+	rightPanel := GUI.MakeRightPanel([]string{"GBFS", "UCS", "A*"}, &mainWindow, &peta)
+	
+	bg := canvas.NewImageFromFile("../assets/ryo_bocchi.jpg")
+	bg.FillMode = canvas.ImageFillStretch
 
-	thewholewindow := container.NewHBox(
+	mainLayout := container.NewHBox(
 		GUI.MakeGap(20, 0),
-		container.NewCenter(
-			container.NewGridWrap(
-				fyne.NewSize(250, 250),
+		container.NewGridWrap(
+			fyne.NewSize(250, 650),
+			container.NewCenter(
 				inputPanel.View(),
-		)),
+			),
+		),
 		GUI.MakeGap(20, 0),
-		mainPanel,
+		container.NewGridWrap(
+			fyne.NewSize(600, 700),
+			mainPanel,
+		),
+		GUI.MakeGap(20, 0),
+		container.NewGridWrap(
+			fyne.NewSize(250, 700),
+			container.NewCenter(
+				rightPanel,
+			),
+		),
 	)
 
-	mainRunner.SetContent(thewholewindow)
-	mainRunner.Resize(fyne.NewSize(1000, 900))
-	mainRunner.ShowAndRun()
+	thewholewindow := container.NewStack(
+		bg,
+		canvas.NewRectangle(color.RGBA{0,0,0,127}),
+		mainLayout,
+	)
+
+	mainWindow.SetContent(thewholewindow)
+	mainWindow.Resize(fyne.NewSize(950, 700))
+	mainWindow.ShowAndRun()
 }

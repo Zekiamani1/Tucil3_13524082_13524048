@@ -26,19 +26,19 @@ func MakeGrid(X, Y int, g *core.Grid) fyne.CanvasObject {
 			var background *canvas.Rectangle
 			switch {
 			case itu.GetGridType() == core.TipeBlock:
-				background = canvas.NewRectangle(color.RGBA{25, 26, 165, 205})
+				background = canvas.NewRectangle(color.RGBA{25, 26, 165, 235})
 				// fmt.Print("X")
 			case itu.GetGridType() == core.TipeGoal:
-				background = canvas.NewRectangle(color.RGBA{255, 243, 88, 205})
+				background = canvas.NewRectangle(color.RGBA{255, 243, 88, 235})
 				// fmt.Print("O")
 			case itu.GetGridType() == core.TipeLava:
-				background = canvas.NewRectangle(color.RGBA{255, 88, 88, 205})
+				background = canvas.NewRectangle(color.RGBA{255, 88, 88, 235})
 				// fmt.Print("L")
 			case itu.GetGridType() == core.TipeStart:
-				background = canvas.NewRectangle(color.RGBA{132, 88, 255, 205})
+				background = canvas.NewRectangle(color.RGBA{132, 88, 255, 235})
 				// fmt.Print("Z")
 			case itu.GetGridType() == core.TipeEmpty:
-				background = canvas.NewRectangle(color.RGBA{255, 255, 255, 205})
+				background = canvas.NewRectangle(color.RGBA{255, 255, 255, 235})
 				// if itu.Constraint != -1 {
 				// 	fmt.Print(itu.Constraint)
 				// } else {
@@ -50,7 +50,8 @@ func MakeGrid(X, Y int, g *core.Grid) fyne.CanvasObject {
 			background.SetMinSize(fyne.NewSize(72, 72))
 			costlabel := canvas.NewText(strconv.Itoa(itu.Cost), color.Black)
 			costlabel.Alignment = fyne.TextAlignCenter
-			costlabel.TextSize = 24
+			costlabel.TextStyle = fyne.TextStyle{Bold: true}
+			costlabel.TextSize = 20
 			if itu.GetGridType() == core.TipeBlock {
 				costlabel.Color = color.White
 			}
@@ -66,11 +67,12 @@ func MakeGrid(X, Y int, g *core.Grid) fyne.CanvasObject {
 	return container.NewGridWithColumns(Y, vessel...)
 }
 
-func UpdateMainPanel(X, Y int, g *core.Grid, container *fyne.Container) {
+func UpdateMainPanel(X, Y int, g *core.Grid, gridcontainer *fyne.Container) {
 	if g == nil {
 		return
 	}
-	newGrid := MakeGrid(X, Y, g)
-	container.Objects = []fyne.CanvasObject{newGrid}
-	container.Refresh()
+	// newGrid := MakeGrid(X, Y, g)
+	newGrid := container.NewVBox(MakeGrid(X, Y, g))
+	gridcontainer.Objects = []fyne.CanvasObject{newGrid}
+	gridcontainer.Refresh()
 }

@@ -1,11 +1,16 @@
 package GUI
 
 import (
+	"image/color"
 	"io"
+	"stima/core"
+	"bytes"
+
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/widget"
-	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/widget"
 )
 
 type InputPanel struct {
@@ -14,19 +19,42 @@ type InputPanel struct {
 	fileContent []byte
 	
 	window *fyne.Window
-	submitFunc func([]byte)
+	peta *core.MainGrid
+	mainPanel *fyne.Container
 }
 
-func NewInputPanel(w *fyne.Window, submitFunc func([]byte)) *InputPanel {
+func (this *InputPanel) submitFunc(input []byte){
+	X, Y, matrix, costMatrix, err := core.ParseInput(bytes.NewReader(input))
+	this.peta.X = X
+	this.peta.Y = Y
+	if err != nil {
+		dialog.ShowError(err, *this.window)
+		return
+	}
+
+	this.peta.Firstgrid, this.peta.Playergrid, this.peta.Endgrid, this.peta.Constraint, err = core.CreateGrid(X, Y, matrix, costMatrix)
+	
+	if err != nil {
+		dialog.ShowError(err, *this.window)
+		return
+	}
+	UpdateMainPanel(X, Y, this.peta.Firstgrid, this.mainPanel)
+}
+
+func NewInputPanel(w *fyne.Window, peta *core.MainGrid, mainPanel *fyne.Container) *InputPanel {
+	textInput := widget.NewMultiLineEntry()
+	textInput.SetPlaceHolder("Masukkan board")
+	textInput.SetMinRowsVisible(8)
 	return &InputPanel{
-		textInput: widget.NewMultiLineEntry(),
+		textInput: textInput,
 		fileLabel: widget.NewLabel("No file selected"),
-		submitFunc: submitFunc,
 		window: w,
+		peta: peta,
+		mainPanel: mainPanel,
 	}
 }
 
-func (this *InputPanel) SelectFile() {
+func (this *InputPanel) selectFile() {
 	dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 		if err != nil {
 			dialog.ShowError(err, *this.window)
@@ -48,7 +76,7 @@ func (this *InputPanel) SelectFile() {
 	}, *this.window).Show()
 }
 
-func (this *InputPanel) Submit() {
+func (this *InputPanel) submit() {
 	var input []byte
 	if this.textInput.Text != "" {
 		input = []byte(this.textInput.Text)
@@ -62,29 +90,29 @@ func (this *InputPanel) Submit() {
 }
 
 func (this *InputPanel) View() fyne.CanvasObject{
-	if this.textInput.PlaceHolder == "" {
-		this.textInput.SetPlaceHolder("Masukkan board")
-	}
 	bukaFile := widget.NewButton("Choose File", func() {
-		this.SelectFile()
+		this.selectFile()
 	})
 
 	tombolSubmit := widget.NewButton("Submit", func() {
-		this.Submit()
+		this.submit()
 	})
 
+	title := canvas.NewText("STIMMER101", color.RGBA{255, 240, 89, 255})
+	title.TextStyle = fyne.TextStyle{Bold: true}
+	title.TextSize = 30
+
 	input := container.NewVBox(
+		title,
 		widget.NewLabel("Multiline Input:"),
 		this.textInput,
-
-		widget.NewSeparator(),
-
+		MakeGap(0,1),
 		widget.NewLabel("Or load from file:"),
+		MakeGap(0,1),
 		bukaFile,
+		MakeGap(0,1),
 		this.fileLabel,
-
-		widget.NewSeparator(),
-
+		MakeGap(0,1),
 		tombolSubmit,
 	)
 
