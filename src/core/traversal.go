@@ -1,9 +1,10 @@
 package core
 
 type TraversalRecord struct {
-	grid *Grid
-	arah Arah
-	path *TraversalRecord
+	constraintNow int
+	grid          *Grid
+	arah          Arah
+	path          *TraversalRecord
 }
 
 func (h TraversalRecord) calculateCost() int {
@@ -18,7 +19,6 @@ func (h TraversalRecord) calculateCost() int {
 	total += h.grid.Cost
 	return total
 }
-
 
 func (h *TraversalRecord) calculateFCost(other *Grid) float64 {
 	parent := h.path

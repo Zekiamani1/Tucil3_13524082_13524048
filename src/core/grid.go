@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"unicode"
 	"sort"
+	"unicode"
 )
 
 type Tipe int
@@ -31,11 +31,11 @@ type Grid struct {
 }
 
 type MainGrid struct {
-	X int
-	Y int
-	Firstgrid *Grid
+	X          int
+	Y          int
+	Firstgrid  *Grid
 	Playergrid *Grid
-	Endgrid *Grid
+	Endgrid    *Grid
 	Constraint []*Grid
 }
 
@@ -63,14 +63,14 @@ var Allarah = []Arah{
 
 func arahToString(arah Arah) string {
 	switch arah {
-		case kiri:
-			return "kiri"
-		case kanan:
-			return "kanan"
-		case bawah:
-			return "bawah"
-		case atas:
-			return "atas"
+	case kiri:
+		return "kiri"
+	case kanan:
+		return "kanan"
+	case bawah:
+		return "bawah"
+	case atas:
+		return "atas"
 	}
 	return "arah invalid"
 }
@@ -118,13 +118,13 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 		if temp == nil {
 			return errors.New("cannot move: reached boundary")
 		}
-		// if temp.Constraint > p.currentConstraint {
-		// 	return errors.New("constraint tidak terpenuhi")
-		// }
+		if temp.Constraint+1 > p.CurrentConstraint {
+			return errors.New("constraint tidak terpenuhi")
+		}
 		p.Position = temp
-		// p.currentConstraint += p.Position.Constraint
-		// temp.Constraint = -1
-		p.Cost += p.Position.Cost
+		if p.CurrentConstraint < p.Position.Constraint {
+			p.CurrentConstraint = p.Position.Constraint
+		}
 		canstop = true
 	}
 	return nil
@@ -233,6 +233,7 @@ func (g *Grid) PrintGrid() {
 func (this *Grid) GetGridType() Tipe {
 	return this.tipe
 }
+
 // func main() {
 // 	firstgrid, start, end, _ := CreateGrid()
 // 	player := Player{Position: start}

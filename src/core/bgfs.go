@@ -2,14 +2,13 @@ package core
 
 import "math"
 
-func (p *Player) GBFS(topleft, end *Grid) {
-	step := 1
+func (p Player) GBFS(left, end *Grid) *TraversalRecord {
+	current := TraversalRecord{grid: p.Position}
 	for true {
 		neighbor := make([]*Grid, 0, 4)
 		for _, v := range Allarah {
-			temp2 := *p
-			err := (&temp2).move(v)
-
+			temp2 := p
+			err := temp2.move(v)
 			if err != nil {
 				neighbor = append(neighbor, nil)
 				continue
@@ -28,19 +27,12 @@ func (p *Player) GBFS(topleft, end *Grid) {
 				choose = i
 			}
 		}
-		p.Position.tipe = TipeEmpty
 		p.move(Allarah[choose])
+		temp := current
+		current = TraversalRecord{grid: p.Position, path: &temp, arah: Allarah[choose], constraintNow: p.CurrentConstraint}
 		if p.Position.tipe == TipeGoal {
-			println("step ", step, Allarah[choose])
-			p.Position.tipe = TipeStart
-			println()
-			topleft.PrintGrid()
-			return
+			return &current
 		}
-		p.Position.tipe = TipeStart
-		println()
-		topleft.PrintGrid()
-		p.Position.tipe = TipeEmpty
-		step++
 	}
+	return nil
 }
