@@ -81,7 +81,6 @@ func main() {
 		result = player.GBFS(firstgrid, end)
 	} else if choice == 3 {
 		result = player.ASTAR(end)
-		return
 	} else {
 		return
 	}

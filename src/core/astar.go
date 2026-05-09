@@ -1,8 +1,8 @@
 package core
 
 import (
-	"sort"
 	"slices"
+	"sort"
 )
 
 func (p Player) ASTAR(end *Grid) *TraversalRecord {
@@ -13,6 +13,7 @@ func (p Player) ASTAR(end *Grid) *TraversalRecord {
 	current := TraversalRecord{}
 	for len(open) > 0 {
 		p.Position = open[0].grid
+		p.CurrentConstraint = open[0].constraintNow
 		current = open[0]
 		if p.Position == end {
 			return &current
@@ -24,10 +25,10 @@ func (p Player) ASTAR(end *Grid) *TraversalRecord {
 			err := temp2.move(v)
 			if err != nil {
 				continue
-			} 
+			}
 
 			parent := current
-			newNode := TraversalRecord{path: &parent, grid: temp2.Position, arah: v}
+			newNode := TraversalRecord{path: &parent, grid: temp2.Position, arah: v, constraintNow: temp2.CurrentConstraint}
 
 			openIdx := slices.IndexFunc(open, func(i TraversalRecord) bool {
 				return i.grid == temp2.Position

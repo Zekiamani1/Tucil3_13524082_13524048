@@ -29,7 +29,7 @@ func (p Player) GBFS(left, end *Grid) *TraversalRecord {
 		}
 		p.move(Allarah[choose])
 		temp := current
-		current = TraversalRecord{grid: p.Position, path: &temp, arah: Allarah[choose], constraintNow: p.CurrentConstraint}
+		current = TraversalRecord{grid: p.Position, path: &temp, arah: Allarah[choose]}
 		if p.Position.tipe == TipeGoal {
 			return &current
 		}
