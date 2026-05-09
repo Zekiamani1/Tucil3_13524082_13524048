@@ -23,12 +23,26 @@ func MakeRightPanel(options []string, window *fyne.Window, peta *core.MainGrid) 
 	tombolSubmit := widget.NewButton("Submit", func() {
 		if peta == nil {
 			dialog.ShowInformation("Error", "No map yet", *window)
+			return
 		}
 		if chosenAlgo == "" {
 			dialog.ShowInformation("Error", "No input provided", *window)
+			return
 		}
-
+		if peta.Endgrid.GetGridType() == core.TipeStart {
+			dialog.ShowInformation("Error", "Map is already solved", *window)
+			return
+		}
+		
 		// BACKENDBACKENDBACKENDBACKEND
+		player := core.Player{Position: peta.Playergrid}
+		pathResults := peta.RunAlgo(&player, chosenAlgo)
+		if pathResults == nil {
+			dialog.ShowInformation("Error", "Map doesn't have solution", *window)
+			return
+		}
+		pathFrames := pathResults.ToCells(&player, peta.Firstgrid)
+		UpdateMainPanelSolution(pathFrames)
 	})
 
 	title := canvas.NewText("STIMMER101", color.RGBA{255, 240, 89, 255})

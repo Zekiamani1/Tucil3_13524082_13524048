@@ -2,7 +2,7 @@ package core
 
 import "math"
 
-func (p Player) GBFS(left, end *Grid) *TraversalRecord {
+func (p Player) GBFS(end *Grid) *TraversalRecord {
 	current := TraversalRecord{grid: p.Position}
 	for true {
 		neighbor := make([]*Grid, 0, 4)

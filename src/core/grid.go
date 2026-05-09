@@ -30,6 +30,12 @@ type Grid struct {
 	Bawah       *Grid
 }
 
+type Cell struct {
+	Tipe        Tipe
+	Constraint  int
+	Cost        int
+}
+
 type MainGrid struct {
 	X          int
 	Y          int
@@ -237,6 +243,34 @@ func (this *Grid) GetGridType() Tipe {
 	return this.tipe
 }
 
+func (this *Grid) ToCells() [][]Cell {
+	var cells [][]Cell
+	now := this
+	for now != nil {
+		var rowcells []Cell
+		itu := now
+		for itu != nil {
+			rowcells = append(rowcells, Cell{Tipe: itu.tipe, Constraint: itu.Constraint, Cost: itu.Cost})
+			itu = itu.Kanan
+		}
+		cells = append(cells, rowcells)
+		now = now.Bawah
+	}
+	return cells
+}
+
+func (this *MainGrid) RunAlgo(player *Player, option string) *TraversalRecord {
+	switch option {
+		case "GBFS":
+			return player.GBFS(this.Endgrid)
+		case "UCS":
+			return player.UCS(this.Endgrid)
+		case "A*":
+			return player.ASTAR(this.Endgrid)
+		default:
+			return nil
+	}
+}
 // func main() {
 // 	firstgrid, start, end, _ := CreateGrid()
 // 	player := Player{Position: start}

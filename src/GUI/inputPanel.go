@@ -20,7 +20,6 @@ type InputPanel struct {
 	
 	window *fyne.Window
 	peta *core.MainGrid
-	mainPanel *fyne.Container
 }
 
 func (this *InputPanel) submitFunc(input []byte){
@@ -38,10 +37,10 @@ func (this *InputPanel) submitFunc(input []byte){
 		dialog.ShowError(err, *this.window)
 		return
 	}
-	UpdateMainPanel(X, Y, this.peta.Firstgrid, this.mainPanel)
+	UpdateMainPanel(X, Y, this.peta.Firstgrid)
 }
 
-func NewInputPanel(w *fyne.Window, peta *core.MainGrid, mainPanel *fyne.Container) *InputPanel {
+func NewInputPanel(w *fyne.Window, peta *core.MainGrid) *InputPanel {
 	textInput := widget.NewMultiLineEntry()
 	textInput.SetPlaceHolder("Masukkan board")
 	textInput.SetMinRowsVisible(8)
@@ -50,7 +49,6 @@ func NewInputPanel(w *fyne.Window, peta *core.MainGrid, mainPanel *fyne.Containe
 		fileLabel: widget.NewLabel("No file selected"),
 		window: w,
 		peta: peta,
-		mainPanel: mainPanel,
 	}
 }
 

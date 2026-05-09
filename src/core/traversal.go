@@ -96,3 +96,24 @@ func (u *TraversalRecord) PrintResultPath(player Player, topleft *Grid) {
 	println("Cost saat ini: ", u.calculateCost())
 	topleft.PrintGrid()
 }
+
+func (this *TraversalRecord) ToCells(player *Player, topleft *Grid) [][][]Cell {
+	parent := this.path
+	var chosenPath []TraversalRecord
+	var result [][][]Cell
+	for parent != nil {
+		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
+		parent = parent.path
+	}
+	for i := 0; i < len(chosenPath); i++ {
+		player.Position.tipe = TipeEmpty
+		player.move(chosenPath[i].arah)
+		player.Position.tipe = TipeStart
+		result = append(result, topleft.ToCells())
+	}
+	player.Position.tipe = TipeEmpty
+	player.move(this.arah)
+	player.Position.tipe = TipeStart
+	result = append(result, topleft.ToCells())
+	return result
+}
