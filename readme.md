@@ -1,20 +1,24 @@
-### Tucil 2 Stima Ice Sliding Solver
+# Tucil 2 Stima Ice Sliding Solver
 
 ---
+![Bocchi](assets/bocchi.png)
 
 <div align="center" id="contributor">
   <strong>
-    <h3>Tucil 2</h3>
+    <h2>Tucil 2</h2>
     <table align="center">
       <tr align="center">
+        <td></td>
         <td>NIM</td>
         <td>Nama</td>
       </tr>
       <tr align="center">
+        <td><img src="https://github.com/achideon.png" width="50" /></td>
         <td>13524048</td>
         <td>Josh Reinhart Zidik</td>
       </tr>
       <tr align="center">
+        <td><img src="https://github.com/zekiamani1.png" width="50" /></td>
         <td>13524082</td>
         <td>Zeki Amani</td>
       </tr>
