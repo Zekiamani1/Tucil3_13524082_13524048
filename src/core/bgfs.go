@@ -6,6 +6,15 @@ func (p Player) GBFS(end *Grid) (int, *TraversalRecord) {
 	current := TraversalRecord{grid: p.Position}
 	iteration := 0
 	for true {
+		if current.path != nil {
+			if current.path.path != nil {
+				if current.path.path.path != nil {
+					if current.path.path.path.grid == current.path.grid && current.grid == current.path.path.grid {
+						return 0, nil //terjadi stuck jir
+					}
+				}
+			}
+		}
 		iteration += 1
 		neighbor := make([]*Grid, 0, 4)
 		for _, v := range Allarah {

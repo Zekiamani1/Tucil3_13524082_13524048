@@ -31,9 +31,9 @@ type Grid struct {
 }
 
 type Cell struct {
-	Tipe        Tipe
-	Constraint  int
-	Cost        int
+	Tipe       Tipe
+	Constraint int
+	Cost       int
 }
 
 type MainGrid struct {
@@ -139,12 +139,12 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 		if temp.tipe == TipeLava {
 			return errors.New("lava jangan lewat sini")
 		}
-		if temp.Constraint > p.CurrentConstraint+1 {
+		if temp.Constraint > p.CurrentConstraint {
 			return errors.New("constraint tidak terpenuhi")
 		}
 		p.Position = temp
-		if p.CurrentConstraint < p.Position.Constraint {
-			p.CurrentConstraint = p.Position.Constraint
+		if p.CurrentConstraint == p.Position.Constraint {
+			p.CurrentConstraint += 1
 		}
 		canstop = true
 	}
@@ -273,16 +273,17 @@ func (this *Grid) ToCells() [][]Cell {
 
 func (this *MainGrid) RunAlgo(player *Player, option string) (int, *TraversalRecord) {
 	switch option {
-		case "GBFS":
-			return player.GBFS(this.Endgrid)
-		case "UCS":
-			return player.UCS(this.Endgrid)
-		case "A*":
-			return player.ASTAR(this.Endgrid)
-		default:
-			return 0, nil
+	case "GBFS":
+		return player.GBFS(this.Endgrid)
+	case "UCS":
+		return player.UCS(this.Endgrid)
+	case "A*":
+		return player.ASTAR(this.Endgrid)
+	default:
+		return 0, nil
 	}
 }
+
 // func main() {
 // 	firstgrid, start, end, _ := CreateGrid()
 // 	player := Player{Position: start}

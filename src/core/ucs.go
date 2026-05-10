@@ -25,7 +25,7 @@ func (p Player) UCS(end *Grid) (int, *TraversalRecord) {
 				return i.grid == temp2.Position
 			})
 			if closedIdx != -1 {
-				if closed[closedIdx].calculateCost() <= newNode.calculateCost() {
+				if closed[closedIdx].calculateCost() <= newNode.calculateCost() && !(closed[closedIdx].constraintNow < newNode.constraintNow) {
 					continue
 				}
 			}
