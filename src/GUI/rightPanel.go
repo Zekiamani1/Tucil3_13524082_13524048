@@ -1,6 +1,7 @@
 package GUI
 
 import (
+	"bytes"
 	"fmt"
 	"image/color"
 	"stima/core"
@@ -78,7 +79,7 @@ func MakeRightPanel(options []string, window *fyne.Window, peta *core.MainGrid) 
 		start := time.Now()
 		mode := chosenMode == "Visit all constraint"
 		iteration, pathResults := peta.RunAlgo(&player, chosenAlgo, mode)
-		duration := time.Since(start)
+		SolveDur := time.Since(start)
 		if pathResults == nil {
 			dialog.ShowInformation("Error", "Map doesn't have solution", *window)
 			return
@@ -90,7 +91,7 @@ func MakeRightPanel(options []string, window *fyne.Window, peta *core.MainGrid) 
 		Solution.Alignment = fyne.TextAlignCenter
 		Solution.Show()
 		
-		SolutionDetail.Text = fmt.Sprintf("Time: %s Iteration: %d", duration, iteration)
+		SolutionDetail.Text = fmt.Sprintf("Time: %s Iteration: %d", SolveDur + ParseDur, iteration)
 		SolutionDetail.TextStyle = fyne.TextStyle{Bold: true}
 		SolutionDetail.TextSize = 16
 		SolutionDetail.Alignment = fyne.TextAlignCenter
@@ -98,9 +99,16 @@ func MakeRightPanel(options []string, window *fyne.Window, peta *core.MainGrid) 
 		SaveFile.Show()
 
 		RightPanel.Refresh()
-		var pathFrames [][][]core.Cell
-		Output, pathFrames = pathResults.GetResultPath(&player, peta.Firstgrid)
 		AccCost = pathResults.GetAccumulatedCost()
+		ConstStep = pathResults.GetConstraint()
+		var pathFrames [][][]core.Cell
+		var outputheader bytes.Buffer
+		fmt.Fprintln(&outputheader, "Solusi yang ditemukan : ", pathResults.GetDirectionsAsString(true))
+		fmt.Fprintln(&outputheader, "Waktu penyelesaian    : ", SolveDur + ParseDur)
+		fmt.Fprintln(&outputheader, "Iterasi pathfinding   : ", iteration)
+		fmt.Fprintln(&outputheader, "Cost solusi           : ", AccCost[len(AccCost)-1])
+		Output, pathFrames = pathResults.GetResultPath(&player, peta.Firstgrid)
+		Output = append(outputheader.Bytes(), Output...)
 		UpdateMainPanelSolution(pathFrames)
 	})
 

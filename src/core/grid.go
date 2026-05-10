@@ -264,7 +264,7 @@ func (g *Grid) PrintGrid() {
 	}
 }
 
-func (g *Grid) ToBytes(output *bytes.Buffer) {
+func (g *Grid) ToBytes(output *bytes.Buffer, constraintNow int) {
 	now := g
 	for now != nil {
 		itu := now
@@ -279,7 +279,7 @@ func (g *Grid) ToBytes(output *bytes.Buffer) {
 			case itu.tipe == TipeStart:
 				fmt.Fprint(output, "Z")
 			case itu.tipe == TipeEmpty:
-				if itu.Constraint != -1 {
+				if itu.Constraint >= constraintNow {
 					fmt.Fprint(output, itu.Constraint)
 				} else {
 					fmt.Fprint(output, " ")

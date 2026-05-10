@@ -20,6 +20,7 @@ var Playback *widget.Button
 var StepDetail *canvas.Text
 
 var AccCost []int
+var ConstStep []int
 
 func MakeGap(sizeX, sizeY float32) fyne.CanvasObject{
 	gap := canvas.NewRectangle(color.Transparent)
@@ -93,7 +94,7 @@ func MakeGridFromCell(index int, cells [][][]core.Cell) fyne.CanvasObject {
 				background = canvas.NewRectangle(color.RGBA{25, 26, 165, 235})
 				// fmt.Print("X")
 			case cells[index][row][col].Tipe == core.TipeGoal:
-				background = canvas.NewRectangle(color.RGBA{255, 243, 88, 235})
+				background = canvas.NewRectangle(color.RGBA{39, 255, 118, 235})
 				// fmt.Print("O")
 			case cells[index][row][col].Tipe == core.TipeLava:
 				background = canvas.NewRectangle(color.RGBA{255, 88, 88, 235})
@@ -102,7 +103,11 @@ func MakeGridFromCell(index int, cells [][][]core.Cell) fyne.CanvasObject {
 				background = canvas.NewRectangle(color.RGBA{132, 88, 255, 235})
 				// fmt.Print("Z")
 			case cells[index][row][col].Tipe == core.TipeEmpty:
-				background = canvas.NewRectangle(color.RGBA{255, 255, 255, 235})
+				if cells[index][row][col].Constraint < ConstStep[index] {
+					background = canvas.NewRectangle(color.RGBA{255, 255, 255, 235})
+				} else {
+					background = canvas.NewRectangle(color.RGBA{255, 243, 88, 235})
+				}
 				// if itu.Constraint != -1 {
 				// 	fmt.Print(itu.Constraint)
 				// } else {
@@ -141,7 +146,7 @@ func UpdateMainPanel(X, Y int, g *core.Grid) {
 
 func UpdateBySlider(idx int, solution [][][]core.Cell){
 	NewSol := MakeGridFromCell(idx, solution)
-	StepDetail.Text = fmt.Sprintf("Step: %d, Cost: %d", idx+1, AccCost[idx])
+	StepDetail.Text = fmt.Sprintf("Step: %d, Cost: %d, Constraint: %d", idx+1, AccCost[idx], ConstStep[idx])
 	newGrid := container.NewVBox(
 		StepDetail,
 		NewSol,
@@ -161,7 +166,7 @@ func UpdateMainPanelSolution(solution [][][]core.Cell) {
 		UpdateBySlider(idx, solution)
 	}
 
-	StepDetail = canvas.NewText(fmt.Sprintf("Step: %d, Cost: %d", 1, AccCost[0]), color.RGBA{255, 240, 89, 255})
+	StepDetail = canvas.NewText(fmt.Sprintf("Step: %d, Cost: %d, Constraint: %d", 1, AccCost[0], ConstStep[0]), color.RGBA{255, 240, 89, 255})
 	StepDetail.TextStyle = fyne.TextStyle{Bold: true}
 	StepDetail.TextSize = 24
 	StepDetail.Alignment = fyne.TextAlignCenter

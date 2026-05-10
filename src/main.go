@@ -44,10 +44,7 @@ func main() {
 			),
 		),
 		GUI.MakeGap(20, 0),
-		container.NewGridWrap(
-			fyne.NewSize(600, 700),
-			GUI.GridContainer,
-		),
+		container.NewCenter(GUI.GridContainer),
 		GUI.MakeGap(20, 0),
 		container.NewGridWrap(
 			fyne.NewSize(250, 700),
@@ -64,6 +61,6 @@ func main() {
 	)
 
 	mainWindow.SetContent(thewholewindow)
-	mainWindow.Resize(fyne.NewSize(950, 700))
+	mainWindow.Resize(fyne.NewSize(1150, 700))
 	mainWindow.ShowAndRun()
 }

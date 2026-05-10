@@ -83,6 +83,7 @@ func (this *TraversalRecord) GetResultPath(player *Player, topleft *Grid) ([]byt
 	var chosenPath []TraversalRecord
 	var result [][][]Cell
 	var output bytes.Buffer
+	ConstStep := this.GetConstraint()
 	for parent != nil {
 		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
 		parent = parent.path
@@ -95,7 +96,7 @@ func (this *TraversalRecord) GetResultPath(player *Player, topleft *Grid) ([]byt
 		fmt.Fprintln(&output, "")
 		fmt.Fprintln(&output, "Arah: ", arahToString(false, chosenPath[i].arah))
 		fmt.Fprintln(&output, "Cost saat ini: ", chosenPath[i].calculateCost(0, nil))
-		topleft.ToBytes(&output)
+		topleft.ToBytes(&output, ConstStep[i])
 	}
 	player.Position.tipe = TipeEmpty
 	player.move(this.arah)
@@ -104,7 +105,7 @@ func (this *TraversalRecord) GetResultPath(player *Player, topleft *Grid) ([]byt
 	fmt.Fprintln(&output, "")
 	fmt.Fprintln(&output, "Arah: ", arahToString(false, this.arah))
 	fmt.Fprintln(&output, "Cost saat ini: ", this.calculateCost(0, nil))
-	topleft.ToBytes(&output)
+	topleft.ToBytes(&output, this.constraintNow)
 	return output.Bytes(), result
 }
 
@@ -138,5 +139,20 @@ func (this *TraversalRecord) GetAccumulatedCost() []int {
 	}
 	total = int(this.calculateCost(0, nil))
 	cost = append(cost, total)
+	return cost
+}
+
+func (this *TraversalRecord) GetConstraint() []int {
+	parent := this.path
+	var chosenPath []TraversalRecord
+	var cost []int
+	for parent != nil {
+		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
+		parent = parent.path
+	}
+	for i := 0; i < len(chosenPath); i++ {
+		cost = append(cost, chosenPath[i].constraintNow)
+	}
+	cost = append(cost, this.constraintNow)
 	return cost
 }
