@@ -7,7 +7,7 @@ type TraversalRecord struct {
 	path          *TraversalRecord
 }
 
-func (h TraversalRecord) calculateCost() int {
+func (h TraversalRecord) calculateCost(pilihan int, end *Grid) float64 {
 	parent := &h
 	var chosenPath []TraversalRecord
 	for parent != nil {
@@ -36,39 +36,15 @@ func (h TraversalRecord) calculateCost() int {
 		}
 	}
 	total += h.grid.Cost
-	return total
-}
-
-func (h TraversalRecord) calculateFCost(other *Grid) float64 {
-	parent := &h
-	var chosenPath []TraversalRecord
-	for parent != nil {
-		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
-		parent = parent.path
+	var totalF float64
+	switch pilihan {
+	case 0:
+		totalF = float64(total) //0 hereustic
+	case 1:
+		totalF = float64(total) + h.grid.calculateEuclideanDistance(end) //1 euclidean hereustic
+	case 2:
+		totalF = float64(total) + h.grid.calculateManhattanDistance(end) //2 manhattan hereustic
 	}
-	total := 0
-	for i, x := range chosenPath {
-		if x.grid != nil {
-			tranvers := x.grid
-			if i != len(chosenPath)-1 {
-				for tranvers != nil && tranvers != chosenPath[i+1].grid {
-					total += tranvers.Cost
-					switch chosenPath[i+1].arah {
-					case kiri:
-						tranvers = tranvers.Kiri
-					case kanan:
-						tranvers = tranvers.Kanan
-					case atas:
-						tranvers = tranvers.Atas
-					case bawah:
-						tranvers = tranvers.Bawah
-					}
-				}
-			}
-		}
-	}
-	total += h.grid.Cost
-	totalF := float64(total) + h.grid.calculateEuclideanDistance(other)
 	return totalF
 }
 
@@ -85,7 +61,7 @@ func (u *TraversalRecord) PrintResultPath(player Player, topleft *Grid) {
 		player.Position.tipe = TipeStart
 		println()
 		println("arah: ", arahToString(false, chosenPath[i].arah))
-		println("Cost saat ini: ", chosenPath[i].calculateCost())
+		println("Cost saat ini: ", chosenPath[i].calculateCost(0, nil))
 		topleft.PrintGrid()
 	}
 	player.Position.tipe = TipeEmpty
@@ -93,7 +69,7 @@ func (u *TraversalRecord) PrintResultPath(player Player, topleft *Grid) {
 	player.Position.tipe = TipeStart
 	println()
 	println("arah: ", arahToString(false, u.arah))
-	println("Cost saat ini: ", u.calculateCost())
+	println("Cost saat ini: ", u.calculateCost(0, nil))
 	topleft.PrintGrid()
 }
 
@@ -143,10 +119,10 @@ func (this *TraversalRecord) GetAccumulatedCost() []int {
 		parent = parent.path
 	}
 	for i := 0; i < len(chosenPath); i++ {
-		total = int(chosenPath[i].calculateCost())
+		total = int(chosenPath[i].calculateCost(0, nil))
 		cost = append(cost, total)
 	}
-	total = int(this.calculateCost())
+	total = int(this.calculateCost(0, nil))
 	cost = append(cost, total)
 	return cost
 }
