@@ -88,6 +88,14 @@ func (this *TraversalRecord) GetResultPath(player *Player, topleft *Grid) ([]byt
 		parent = parent.path
 	}
 	for i := 0; i < len(chosenPath); i++ {
+		if i == 0 {
+			result = append(result, topleft.ToCells())
+			fmt.Fprintln(&output, "")
+			fmt.Fprintln(&output, "Arah: ", arahToString(false, chosenPath[i].arah))
+			fmt.Fprintln(&output, "Cost saat ini: ", chosenPath[i].calculateCost(0, nil))
+			topleft.ToBytes(&output)
+			continue
+		}
 		player.Position.tipe = TipeEmpty
 		player.move(chosenPath[i].arah)
 		player.Position.tipe = TipeStart

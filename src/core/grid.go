@@ -104,24 +104,36 @@ func (p *Player) move(arah Arah) error { //kalo false berarti gabisa lewat situ
 		stop := false
 		switch arah {
 		case kiri:
+			if temp.Kiri == nil {
+				return errors.New("cannot move: reached boundary")
+			}
 			if temp.Kiri.tipe == TipeBlock {
 				stop = true
 				break
 			}
 			temp = temp.Kiri
 		case kanan:
+			if temp.Kanan == nil {
+				return errors.New("cannot move: reached boundary")
+			}
 			if temp.Kanan.tipe == TipeBlock {
 				stop = true
 				break
 			}
 			temp = temp.Kanan
 		case atas:
+			if temp.Atas == nil {
+				return errors.New("cannot move: reached boundary")
+			}
 			if temp.Atas.tipe == TipeBlock {
 				stop = true
 				break
 			}
 			temp = temp.Atas
 		case bawah:
+			if temp.Bawah == nil {
+				return errors.New("cannot move: reached boundary")
+			}
 			if temp.Bawah.tipe == TipeBlock {
 				stop = true
 				break
@@ -194,12 +206,14 @@ func CreateGrid(X, Y int, matrix []string, costMatrix [][]int) (firstgrid *Grid,
 	sort.Slice(constraint, func(i, j int) bool {
 		return constraint[i].Constraint < constraint[j].Constraint
 	})
-	if constraint[0].Constraint != 0 {
-		return nil, nil, nil, nil, errors.New("Tile berangka harus dimulai dari 0")
-	}
-	for i := 0; i < len(constraint)-1; i++ {
-		if constraint[i+1].Constraint != constraint[i].Constraint+1 {
-			return nil, nil, nil, nil, errors.New("Tile berangka lompat lompat")
+	if len(constraint) != 0 {
+		if constraint[0].Constraint != 0 {
+			return nil, nil, nil, nil, errors.New("Tile berangka harus dimulai dari 0")
+		}
+		for i := 0; i < len(constraint)-1; i++ {
+			if constraint[i+1].Constraint != constraint[i].Constraint+1 {
+				return nil, nil, nil, nil, errors.New("Tile berangka lompat lompat")
+			}
 		}
 	}
 	for i := 0; i < X; i++ {

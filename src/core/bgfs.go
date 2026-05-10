@@ -57,7 +57,7 @@ func (p Player) GBFS(end *Grid, constraints []*Grid, NeedToDoAllConstraint bool)
 		if target == -1 {
 			target = len(constraint) - 1
 		}
-		if p.Position.tipe == TipeGoal && (!NeedToDoAllConstraint || p.CurrentConstraint > constraint[len(constraint)-2].Constraint) {
+		if p.Position.tipe == TipeGoal && (!NeedToDoAllConstraint || (len(constraint) < 2 || p.CurrentConstraint > constraint[len(constraint)-2].Constraint)) {
 			return iteration, &current
 		}
 	}

@@ -43,7 +43,7 @@ func (p Player) UCS(end *Grid, constraint []*Grid, NeedToDoAllConstraint bool) (
 		p.Position = queue[0].grid
 		p.CurrentConstraint = queue[0].constraintNow
 		current = queue[0]
-		if p.Position == end && (!NeedToDoAllConstraint || p.CurrentConstraint > constraint[len(constraint)-1].Constraint) {
+		if p.Position.tipe == TipeGoal && (!NeedToDoAllConstraint || (len(constraint) < 1 || p.CurrentConstraint > constraint[len(constraint)-1].Constraint)) {
 			return iteration, &current
 		}
 		queue = queue[1:]

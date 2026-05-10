@@ -29,7 +29,7 @@ func (p Player) ASTAR(end *Grid, constraints []*Grid, hereustic int, NeedToDoAll
 		if target == -1 {
 			target = len(constraint) - 1
 		}
-		if p.Position == end && (!NeedToDoAllConstraint || p.CurrentConstraint > constraint[len(constraint)-2].Constraint) {
+		if p.Position == end && (!NeedToDoAllConstraint || (len(constraint) < 2 || p.CurrentConstraint > constraint[len(constraint)-2].Constraint)) {
 			return iteration, &current
 		}
 		closed = append(closed, current)
