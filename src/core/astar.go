@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-func (p Player) ASTAR(end *Grid) (int, *TraversalRecord) {
+func (p Player) ASTAR(end *Grid, hereustic int) (int, *TraversalRecord) {
 	// step := 1
 	open := make([]TraversalRecord, 0)
 	open = append(open, TraversalRecord{path: nil, grid: p.Position})
@@ -36,7 +36,7 @@ func (p Player) ASTAR(end *Grid) (int, *TraversalRecord) {
 				return i.grid == temp2.Position
 			})
 			if openIdx != -1 {
-				if open[openIdx].calculateCost() > newNode.calculateCost() {
+				if open[openIdx].calculateCost(hereustic, end) > newNode.calculateCost(hereustic, end) {
 					open = append(open[:openIdx], open[openIdx+1:]...)
 				} else {
 					continue
@@ -47,7 +47,7 @@ func (p Player) ASTAR(end *Grid) (int, *TraversalRecord) {
 				return i.grid == temp2.Position
 			})
 			if closedIdx != -1 {
-				if closed[closedIdx].calculateCost() <= newNode.calculateCost() && !(closed[closedIdx].constraintNow < newNode.constraintNow) {
+				if closed[closedIdx].calculateCost(hereustic, end) <= newNode.calculateCost(hereustic, end) && !(closed[closedIdx].constraintNow < newNode.constraintNow) {
 					continue
 				}
 			}
@@ -55,7 +55,7 @@ func (p Player) ASTAR(end *Grid) (int, *TraversalRecord) {
 			open = append(open, newNode)
 		}
 		sort.Slice(open, func(i, j int) bool {
-			return open[i].calculateFCost(end) < open[j].calculateFCost(end)
+			return open[i].calculateCost(hereustic, end) < open[j].calculateCost(hereustic, end)
 		})
 	}
 	return 0, nil

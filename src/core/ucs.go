@@ -25,7 +25,7 @@ func (p Player) UCS(end *Grid) (int, *TraversalRecord) {
 				return i.grid == temp2.Position
 			})
 			if closedIdx != -1 {
-				if closed[closedIdx].calculateCost() <= newNode.calculateCost() && !(closed[closedIdx].constraintNow < newNode.constraintNow) {
+				if closed[closedIdx].calculateCost(0, nil) <= newNode.calculateCost(0, nil) && !(closed[closedIdx].constraintNow < newNode.constraintNow) {
 					continue
 				}
 			}
@@ -33,7 +33,7 @@ func (p Player) UCS(end *Grid) (int, *TraversalRecord) {
 		}
 		closed = append(closed, current)
 		sort.Slice(queue, func(i, j int) bool {
-			return queue[i].calculateCost() < queue[j].calculateCost()
+			return queue[i].calculateCost(0, nil) < queue[j].calculateCost(0, nil)
 		})
 
 		if len(queue) == 0 {
