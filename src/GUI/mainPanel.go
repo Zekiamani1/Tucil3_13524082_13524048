@@ -40,7 +40,7 @@ func MakeGrid(X, Y int, g *core.Grid) fyne.CanvasObject {
 				background = canvas.NewRectangle(color.RGBA{25, 26, 165, 235})
 				// fmt.Print("X")
 			case itu.GetGridType() == core.TipeGoal:
-				background = canvas.NewRectangle(color.RGBA{255, 243, 88, 235})
+				background = canvas.NewRectangle(color.RGBA{39, 255, 118, 235})
 				// fmt.Print("O")
 			case itu.GetGridType() == core.TipeLava:
 				background = canvas.NewRectangle(color.RGBA{255, 88, 88, 235})
@@ -49,7 +49,11 @@ func MakeGrid(X, Y int, g *core.Grid) fyne.CanvasObject {
 				background = canvas.NewRectangle(color.RGBA{132, 88, 255, 235})
 				// fmt.Print("Z")
 			case itu.GetGridType() == core.TipeEmpty:
-				background = canvas.NewRectangle(color.RGBA{255, 255, 255, 235})
+				if itu.Constraint == -1 {
+					background = canvas.NewRectangle(color.RGBA{255, 255, 255, 235})
+				} else {
+					background = canvas.NewRectangle(color.RGBA{255, 243, 88, 235})
+				}
 				// if itu.Constraint != -1 {
 				// 	fmt.Print(itu.Constraint)
 				// } else {
