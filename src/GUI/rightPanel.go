@@ -61,6 +61,7 @@ func MakeRightPanel(options []string, window *fyne.Window, peta *core.MainGrid) 
 
 		RightPanel.Refresh()
 		pathFrames := pathResults.ToCells(&player, peta.Firstgrid)
+		AccCost = pathResults.GetAccumulatedCost()
 		UpdateMainPanelSolution(pathFrames)
 	})
 
