@@ -6,6 +6,7 @@ import (
 	"io"
 	"path/filepath"
 	"stima/core"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -14,6 +15,8 @@ import (
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 )
+
+var ParseDur time.Duration
 
 type InputPanel struct {
 	textInput *widget.Entry
@@ -25,6 +28,7 @@ type InputPanel struct {
 }
 
 func (this *InputPanel) submitFunc(input []byte){
+	start := time.Now()
 	X, Y, matrix, costMatrix, err := core.ParseInput(bytes.NewReader(input))
 	this.peta.X = X
 	this.peta.Y = Y
@@ -39,6 +43,7 @@ func (this *InputPanel) submitFunc(input []byte){
 		dialog.ShowError(err, *this.window)
 		return
 	}
+	ParseDur = time.Since(start)
 	UpdateMainPanel(X, Y, this.peta.Firstgrid)
 }
 
