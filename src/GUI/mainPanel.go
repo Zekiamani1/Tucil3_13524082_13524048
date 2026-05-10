@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"stima/core"
 	"time"
+	"fmt"
 
 	"strconv"
 
@@ -17,6 +18,8 @@ var GridContainer *fyne.Container
 var Slider *widget.Slider
 var Playback *widget.Button
 var StepDetail *canvas.Text
+
+var AccCost []int
 
 func MakeGap(sizeX, sizeY float32) fyne.CanvasObject{
 	gap := canvas.NewRectangle(color.Transparent)
@@ -134,7 +137,9 @@ func UpdateMainPanel(X, Y int, g *core.Grid) {
 
 func UpdateBySlider(idx int, solution [][][]core.Cell){
 	NewSol := MakeGridFromCell(idx, solution)
+	StepDetail.Text = fmt.Sprintf("Step: %d, Cost: %d", idx+1, AccCost[idx])
 	newGrid := container.NewVBox(
+		StepDetail,
 		NewSol,
 		Slider,
 		Playback,
@@ -152,9 +157,9 @@ func UpdateMainPanelSolution(solution [][][]core.Cell) {
 		UpdateBySlider(idx, solution)
 	}
 
-	StepDetail = canvas.NewText("Placeholder", color.RGBA{255, 240, 89, 255})
+	StepDetail = canvas.NewText(fmt.Sprintf("Step: %d, Cost: %d", 1, AccCost[0]), color.RGBA{255, 240, 89, 255})
 	StepDetail.TextStyle = fyne.TextStyle{Bold: true}
-	StepDetail.TextSize = 12
+	StepDetail.TextSize = 24
 	StepDetail.Alignment = fyne.TextAlignCenter
 
 	Playback = widget.NewButton("Play", func(){
@@ -170,6 +175,7 @@ func UpdateMainPanelSolution(solution [][][]core.Cell) {
 	
 	firstSol := MakeGridFromCell(0, solution)
 	newGrid := container.NewVBox(
+		StepDetail,
 		firstSol,
 		Slider,
 		Playback,
