@@ -244,7 +244,6 @@ func CreateGrid(X, Y int, matrix []string, costMatrix [][]int) (firstgrid *Grid,
 }
 func (g *Grid) calculateEuclideanDistance(other *Grid) float64 {
 	return math.Sqrt(math.Pow(float64(other.coordinateX)-float64(g.coordinateX), 2) + math.Pow(float64(other.coordinateY)-float64(g.coordinateY), 2))
-
 }
 func (g *Grid) calculateManhattanDistance(other *Grid) float64 {
 	return math.Abs(float64(other.coordinateX)-float64(g.coordinateX)) + math.Abs(float64(other.coordinateY)-float64(g.coordinateY))
