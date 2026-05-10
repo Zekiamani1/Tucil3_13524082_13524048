@@ -193,6 +193,14 @@ func CreateGrid(X, Y int, matrix []string, costMatrix [][]int) (firstgrid *Grid,
 	sort.Slice(constraint, func(i, j int) bool {
 		return constraint[i].Constraint < constraint[j].Constraint
 	})
+	if constraint[0].Constraint != 0 {
+		return nil, nil, nil, nil, errors.New("Tile berangka harus dimulai dari 0")
+	}
+	for i := 0; i < len(constraint)-1; i++ {
+		if constraint[i+1].Constraint != constraint[i].Constraint+1 {
+			return nil, nil, nil, nil, errors.New("Tile berangka lompat lompat")
+		}
+	}
 	for i := 0; i < X; i++ {
 		for j := 0; j < Y; j++ {
 			grid[i][j].Cost = costMatrix[i][j]
