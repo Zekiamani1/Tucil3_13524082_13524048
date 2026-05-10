@@ -338,6 +338,8 @@ func (this *MainGrid) RunAlgo(player *Player, option string, visitAllConst bool)
 		return player.ASTAR(this.Endgrid, this.Constraint, 1, visitAllConst)
 	case "A* by Manhattan Distance":
 		return player.ASTAR(this.Endgrid, this.Constraint, 2, visitAllConst)
+	case "A* by Chebyshev Distance":
+		return player.ASTAR(this.Endgrid, this.Constraint, 3, visitAllConst)
 	default:
 		return 0, nil
 	}

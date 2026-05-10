@@ -30,7 +30,7 @@ func main() {
 
 	inputPanel := GUI.NewInputPanel(&mainWindow, &peta)
 
-	GUI.RightPanel = GUI.MakeRightPanel([]string{"GBFS", "UCS", "A* by Euclidean Distance", "A* by Manhattan Distance"}, &mainWindow, &peta)
+	GUI.RightPanel = GUI.MakeRightPanel([]string{"GBFS", "UCS", "A* by Euclidean Distance", "A* by Manhattan Distance", "A* by Chebyshev Distance"}, &mainWindow, &peta)
 
 	bg := canvas.NewImageFromFile("../assets/ryo_bocchi.jpg")
 	bg.FillMode = canvas.ImageFillStretch
