@@ -31,9 +31,9 @@ type Grid struct {
 }
 
 type Cell struct {
-	Tipe        Tipe
-	Constraint  int
-	Cost        int
+	Tipe       Tipe
+	Constraint int
+	Cost       int
 }
 
 type MainGrid struct {
@@ -193,6 +193,14 @@ func CreateGrid(X, Y int, matrix []string, costMatrix [][]int) (firstgrid *Grid,
 	sort.Slice(constraint, func(i, j int) bool {
 		return constraint[i].Constraint < constraint[j].Constraint
 	})
+	if constraint[0].Constraint != 0 {
+		return nil, nil, nil, nil, errors.New("Tile berangka harus dimulai dari 0")
+	}
+	for i := 0; i < len(constraint)-1; i++ {
+		if constraint[i+1].Constraint != constraint[i].Constraint+1 {
+			return nil, nil, nil, nil, errors.New("Tile berangka lompat lompat")
+		}
+	}
 	for i := 0; i < X; i++ {
 		for j := 0; j < Y; j++ {
 			grid[i][j].Cost = costMatrix[i][j]
@@ -273,16 +281,17 @@ func (this *Grid) ToCells() [][]Cell {
 
 func (this *MainGrid) RunAlgo(player *Player, option string) (int, *TraversalRecord) {
 	switch option {
-		case "GBFS":
-			return player.GBFS(this.Endgrid)
-		case "UCS":
-			return player.UCS(this.Endgrid)
-		case "A*":
-			return player.ASTAR(this.Endgrid)
-		default:
-			return 0, nil
+	case "GBFS":
+		return player.GBFS(this.Endgrid)
+	case "UCS":
+		return player.UCS(this.Endgrid)
+	case "A*":
+		return player.ASTAR(this.Endgrid)
+	default:
+		return 0, nil
 	}
 }
+
 // func main() {
 // 	firstgrid, start, end, _ := CreateGrid()
 // 	player := Player{Position: start}
