@@ -21,7 +21,7 @@ import (
 
 func main() {
 	var peta core.MainGrid
-	GUI.GridContainer = container.NewCenter(container.NewStack())
+	GUI.GridContainer = container.NewCenter(container.NewGridWrap(fyne.NewSize(650,700)))
 
 	fmt.Println("START")
 

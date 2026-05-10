@@ -96,6 +96,7 @@ func (this *TraversalRecord) GetResultPath(player *Player, topleft *Grid) ([]byt
 		fmt.Fprintln(&output, "")
 		fmt.Fprintln(&output, "Arah: ", arahToString(false, chosenPath[i].arah))
 		fmt.Fprintln(&output, "Cost saat ini: ", chosenPath[i].calculateCost(0, nil))
+		fmt.Fprintln(&output, "Constraint saat ini: ", chosenPath[i].constraintNow)
 		topleft.ToBytes(&output, ConstStep[i])
 	}
 	player.Position.tipe = TipeEmpty
@@ -105,6 +106,7 @@ func (this *TraversalRecord) GetResultPath(player *Player, topleft *Grid) ([]byt
 	fmt.Fprintln(&output, "")
 	fmt.Fprintln(&output, "Arah: ", arahToString(false, this.arah))
 	fmt.Fprintln(&output, "Cost saat ini: ", this.calculateCost(0, nil))
+	fmt.Fprintln(&output, "Constraint saat ini: ", this.constraintNow)
 	topleft.ToBytes(&output, this.constraintNow)
 	return output.Bytes(), result
 }

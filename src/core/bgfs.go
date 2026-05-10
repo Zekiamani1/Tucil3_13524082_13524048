@@ -50,7 +50,7 @@ func (p Player) GBFS(end *Grid, constraints []*Grid, NeedToDoAllConstraint bool)
 		}
 		p.move(Allarah[choose])
 		temp := current
-		current = TraversalRecord{grid: p.Position, path: &temp, arah: Allarah[choose]}
+		current = TraversalRecord{grid: p.Position, path: &temp, arah: Allarah[choose], constraintNow: p.CurrentConstraint}
 		target = slices.IndexFunc(constraint, func(i *Grid) bool {
 			return i.Constraint == p.CurrentConstraint
 		})
