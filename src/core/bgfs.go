@@ -5,9 +5,14 @@ import (
 	"slices"
 )
 
-func (p Player) GBFS(end *Grid, constraints []*Grid) (int, *TraversalRecord) {
+func (p Player) GBFS(end *Grid, constraints []*Grid, NeedToDoAllConstraint bool) (int, *TraversalRecord) {
 	target := 0
-	constraint := append(constraints, end)
+	var constraint []*Grid
+	if !NeedToDoAllConstraint {
+		constraint = []*Grid{end}
+	} else {
+		constraint = append(constraints, end)
+	}
 	current := TraversalRecord{grid: p.Position}
 	iteration := 0
 	for true {
@@ -52,7 +57,7 @@ func (p Player) GBFS(end *Grid, constraints []*Grid) (int, *TraversalRecord) {
 		if target == -1 {
 			target = len(constraint) - 1
 		}
-		if p.Position.tipe == TipeGoal && p.CurrentConstraint > constraint[len(constraint)-2].Constraint {
+		if p.Position.tipe == TipeGoal && (!NeedToDoAllConstraint || p.CurrentConstraint > constraint[len(constraint)-2].Constraint) {
 			return iteration, &current
 		}
 	}

@@ -5,9 +5,14 @@ import (
 	"sort"
 )
 
-func (p Player) ASTAR(end *Grid, constraints []*Grid, hereustic int) (int, *TraversalRecord) {
+func (p Player) ASTAR(end *Grid, constraints []*Grid, hereustic int, NeedToDoAllConstraint bool) (int, *TraversalRecord) {
+	var constraint []*Grid
+	if !NeedToDoAllConstraint {
+		constraint = []*Grid{end}
+	} else {
+		constraint = append(constraints, end)
+	}
 	target := 0
-	constraint := append(constraints, end)
 	open := make([]TraversalRecord, 0)
 	open = append(open, TraversalRecord{path: nil, grid: p.Position})
 	closed := make([]TraversalRecord, 0)
@@ -24,7 +29,7 @@ func (p Player) ASTAR(end *Grid, constraints []*Grid, hereustic int) (int, *Trav
 		if target == -1 {
 			target = len(constraint) - 1
 		}
-		if p.Position == end && p.CurrentConstraint > constraint[len(constraint)-2].Constraint {
+		if p.Position == end && (!NeedToDoAllConstraint || p.CurrentConstraint > constraint[len(constraint)-2].Constraint) {
 			return iteration, &current
 		}
 		closed = append(closed, current)
