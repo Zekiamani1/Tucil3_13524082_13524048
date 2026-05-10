@@ -38,7 +38,9 @@ This program is a solver to the ice sliding puzzle using pathfinding algorithm s
 ## Installation & Setup
 
 ### Requirements
-- Golang
+- Golang (version 1.26.2 or higher)
+- Git
+- GCC/Build Tools (for Fyne GUI compilation on Linux)
 
 
 ### Installing Dependencies
@@ -46,6 +48,25 @@ This program is a solver to the ice sliding puzzle using pathfinding algorithm s
 
    ```bash
    sudo apt install golang-go
+   ```
+
+2. Git
+
+   ```bash
+   sudo apt install git
+   ```
+
+3. Build Tools (for Linux users, required for Fyne GUI)
+
+   ```bash
+   sudo apt install build-essential libgl1-mesa-dev xorg-dev
+   ```
+
+4. Go Module Dependencies
+
+   After cloning the repository, dependencies will be automatically downloaded:
+   ```bash
+   go mod download
    ```
 
 
