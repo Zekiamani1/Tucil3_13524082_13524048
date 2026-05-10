@@ -1,6 +1,7 @@
 package core
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"math"
@@ -263,6 +264,34 @@ func (g *Grid) PrintGrid() {
 	}
 }
 
+func (g *Grid) ToBytes(output *bytes.Buffer) {
+	now := g
+	for now != nil {
+		itu := now
+		for itu != nil {
+			switch {
+			case itu.tipe == TipeBlock:
+				fmt.Fprint(output, "X")
+			case itu.tipe == TipeGoal:
+				fmt.Fprint(output, "O")
+			case itu.tipe == TipeLava:
+				fmt.Fprint(output, "L")
+			case itu.tipe == TipeStart:
+				fmt.Fprint(output, "Z")
+			case itu.tipe == TipeEmpty:
+				if itu.Constraint != -1 {
+					fmt.Fprint(output, itu.Constraint)
+				} else {
+					fmt.Fprint(output, " ")
+				}
+			}
+			itu = itu.Kanan
+		}
+		fmt.Fprint(output, "\n")
+		now = now.Bawah
+	}
+}
+
 func (this *Grid) GetGridType() Tipe {
 	return this.tipe
 }
@@ -283,14 +312,16 @@ func (this *Grid) ToCells() [][]Cell {
 	return cells
 }
 
-func (this *MainGrid) RunAlgo(player *Player, option string) (int, *TraversalRecord) {
+func (this *MainGrid) RunAlgo(player *Player, option string, visitAllConst bool) (int, *TraversalRecord) {
 	switch option {
 	case "GBFS":
-		return player.GBFS(this.Endgrid, this.Constraint)
+		return player.GBFS(this.Endgrid, this.Constraint, visitAllConst)
 	case "UCS":
-		return player.UCS(this.Endgrid, this.Constraint)
-	case "A*":
-		return player.ASTAR(this.Endgrid, this.Constraint)
+		return player.UCS(this.Endgrid, this.Constraint, visitAllConst)
+	case "A* by Euclidean Distance":
+		return player.ASTAR(this.Endgrid, this.Constraint, 1, visitAllConst)
+	case "A* by Manhattan Distance":
+		return player.ASTAR(this.Endgrid, this.Constraint, 2, visitAllConst)
 	default:
 		return 0, nil
 	}

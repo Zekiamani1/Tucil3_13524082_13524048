@@ -25,12 +25,12 @@ func main() {
 
 	fmt.Println("START")
 
-	myApp := app.New()
+	myApp := app.NewWithID("com.abcd.stima")
 	mainWindow := myApp.NewWindow("STIMMER101")
 
 	inputPanel := GUI.NewInputPanel(&mainWindow, &peta)
 
-	GUI.RightPanel = GUI.MakeRightPanel([]string{"GBFS", "UCS", "A*"}, &mainWindow, &peta)
+	GUI.RightPanel = GUI.MakeRightPanel([]string{"GBFS", "UCS", "A* by Euclidean Distance", "A* by Manhattan Distance"}, &mainWindow, &peta)
 
 	bg := canvas.NewImageFromFile("../assets/ryo_bocchi.jpg")
 	bg.FillMode = canvas.ImageFillStretch

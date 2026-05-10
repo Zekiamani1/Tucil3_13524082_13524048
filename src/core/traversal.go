@@ -1,5 +1,10 @@
 package core
 
+import (
+	"bytes"
+	"fmt"
+)
+
 type TraversalRecord struct {
 	constraintNow int
 	grid          *Grid
@@ -73,10 +78,11 @@ func (u *TraversalRecord) PrintResultPath(player Player, topleft *Grid) {
 	topleft.PrintGrid()
 }
 
-func (this *TraversalRecord) ToCells(player *Player, topleft *Grid) [][][]Cell {
+func (this *TraversalRecord) GetResultPath(player *Player, topleft *Grid) ([]byte, [][][]Cell) {
 	parent := this.path
 	var chosenPath []TraversalRecord
 	var result [][][]Cell
+	var output bytes.Buffer
 	for parent != nil {
 		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
 		parent = parent.path
@@ -86,12 +92,20 @@ func (this *TraversalRecord) ToCells(player *Player, topleft *Grid) [][][]Cell {
 		player.move(chosenPath[i].arah)
 		player.Position.tipe = TipeStart
 		result = append(result, topleft.ToCells())
+		fmt.Fprintln(&output, "")
+		fmt.Fprintln(&output, "Arah: ", arahToString(false, chosenPath[i].arah))
+		fmt.Fprintln(&output, "Cost saat ini: ", chosenPath[i].calculateCost(0, nil))
+		topleft.ToBytes(&output)
 	}
 	player.Position.tipe = TipeEmpty
 	player.move(this.arah)
 	player.Position.tipe = TipeStart
 	result = append(result, topleft.ToCells())
-	return result
+	fmt.Fprintln(&output, "")
+	fmt.Fprintln(&output, "Arah: ", arahToString(false, this.arah))
+	fmt.Fprintln(&output, "Cost saat ini: ", this.calculateCost(0, nil))
+	topleft.ToBytes(&output)
+	return output.Bytes(), result
 }
 
 func (this *TraversalRecord) GetDirectionsAsString(simplified bool) string {

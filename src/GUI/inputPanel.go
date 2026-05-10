@@ -1,15 +1,17 @@
 package GUI
 
 import (
+	"bytes"
 	"image/color"
 	"io"
+	"path/filepath"
 	"stima/core"
-	"bytes"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -53,7 +55,7 @@ func NewInputPanel(w *fyne.Window, peta *core.MainGrid) *InputPanel {
 }
 
 func (this *InputPanel) selectFile() {
-	dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+	fileOpener := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 		if err != nil {
 			dialog.ShowError(err, *this.window)
 			return
@@ -71,7 +73,20 @@ func (this *InputPanel) selectFile() {
 
 		this.fileContent = data
 		this.fileLabel.SetText(reader.URI().Name())
-	}, *this.window).Show()
+	}, *this.window)
+
+	path, err1 := filepath.Abs(".")
+	if err1 != nil {
+		dialog.ShowError(err1, *this.window)
+		return
+	}
+	loc, err2 := storage.ListerForURI(storage.NewFileURI(path))
+	if err2 != nil {
+		dialog.ShowError(err2, *this.window)
+		return
+	}
+	fileOpener.SetLocation(loc)
+	fileOpener.Show()
 }
 
 func (this *InputPanel) submit() {
