@@ -26,12 +26,12 @@ func MakeRightPanel(options []string, window *fyne.Window, peta *core.MainGrid) 
 	Solution := canvas.NewText("", color.RGBA{255, 240, 89, 255})
 	SolutionDetail := canvas.NewText("", color.RGBA{255, 240, 89, 255})
 	tombolSubmit := widget.NewButton("Submit", func() {
-		if peta == nil {
+		if peta.Firstgrid == nil {
 			dialog.ShowInformation("Error", "No map yet", *window)
 			return
 		}
 		if chosenAlgo == "" {
-			dialog.ShowInformation("Error", "No input provided", *window)
+			dialog.ShowInformation("Error", "No algorithm choosen", *window)
 			return
 		}
 		if peta.Endgrid.GetGridType() == core.TipeStart {

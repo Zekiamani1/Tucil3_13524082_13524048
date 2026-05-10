@@ -18,8 +18,6 @@ import (
 )
 
 func main() {
-	// var firstgrid, startgrid, endgrid *core.Grid
-	// var constraint []*core.Grid
 	var peta core.MainGrid
 	GUI.GridContainer = container.NewCenter(container.NewStack())
 	
