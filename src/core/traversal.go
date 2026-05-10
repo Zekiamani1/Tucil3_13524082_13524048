@@ -132,3 +132,21 @@ func (this *TraversalRecord) GetDirectionsAsString(simplified bool) string {
 	result = result + arahToString(true, this.arah)
 	return result
 }
+
+func (this *TraversalRecord) GetAccumulatedCost() []int {
+	parent := this.path
+	var chosenPath []TraversalRecord
+	var cost []int
+	total := 0
+	for parent != nil {
+		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
+		parent = parent.path
+	}
+	for i := 0; i < len(chosenPath); i++ {
+		total = int(chosenPath[i].calculateCost())
+		cost = append(cost, total)
+	}
+	total = int(this.calculateCost())
+	cost = append(cost, total)
+	return cost
+}
