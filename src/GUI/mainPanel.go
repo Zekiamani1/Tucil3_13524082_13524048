@@ -3,6 +3,7 @@ package GUI
 import (
 	"image/color"
 	"stima/core"
+	"time"
 
 	"strconv"
 
@@ -14,6 +15,8 @@ import (
 
 var GridContainer *fyne.Container
 var Slider *widget.Slider
+var Playback *widget.Button
+var StepDetail *canvas.Text
 
 func MakeGap(sizeX, sizeY float32) fyne.CanvasObject{
 	gap := canvas.NewRectangle(color.Transparent)
@@ -134,6 +137,7 @@ func UpdateBySlider(idx int, solution [][][]core.Cell){
 	newGrid := container.NewVBox(
 		NewSol,
 		Slider,
+		Playback,
 	)
 	GridContainer.Objects = []fyne.CanvasObject{newGrid}
 	GridContainer.Refresh()
@@ -148,10 +152,27 @@ func UpdateMainPanelSolution(solution [][][]core.Cell) {
 		UpdateBySlider(idx, solution)
 	}
 
+	StepDetail = canvas.NewText("Placeholder", color.RGBA{255, 240, 89, 255})
+	StepDetail.TextStyle = fyne.TextStyle{Bold: true}
+	StepDetail.TextSize = 12
+	StepDetail.Alignment = fyne.TextAlignCenter
+
+	Playback = widget.NewButton("Play", func(){
+		go func(){
+			for i := range len(solution){
+				fyne.Do(func() {
+					Slider.SetValue(float64(i))
+				})
+				time.Sleep(500 * time.Millisecond)
+			}
+		}()
+	})
+	
 	firstSol := MakeGridFromCell(0, solution)
 	newGrid := container.NewVBox(
 		firstSol,
 		Slider,
+		Playback,
 	)
 	GridContainer.Objects = []fyne.CanvasObject{newGrid}
 	GridContainer.Refresh()

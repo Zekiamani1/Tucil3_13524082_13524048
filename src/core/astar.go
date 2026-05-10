@@ -5,14 +5,16 @@ import (
 	"sort"
 )
 
-func (p Player) ASTAR(end *Grid, constraints []*Grid) *TraversalRecord {
+func (p Player) ASTAR(end *Grid, constraints []*Grid) (int, *TraversalRecord) {
 	target := 0
 	constraint := append(constraints, end)
 	open := make([]TraversalRecord, 0)
 	open = append(open, TraversalRecord{path: nil, grid: p.Position})
 	closed := make([]TraversalRecord, 0)
 	current := TraversalRecord{}
+	iteration := 0
 	for len(open) > 0 {
+		iteration += 1
 		p.Position = open[0].grid
 		p.CurrentConstraint = open[0].constraintNow
 		current = open[0]
@@ -23,7 +25,7 @@ func (p Player) ASTAR(end *Grid, constraints []*Grid) *TraversalRecord {
 			target = len(constraint) - 1
 		}
 		if p.Position == end && p.CurrentConstraint > constraint[len(constraint)-2].Constraint {
-			return &current
+			return iteration, &current
 		}
 		closed = append(closed, current)
 		open = open[1:]
@@ -63,5 +65,5 @@ func (p Player) ASTAR(end *Grid, constraints []*Grid) *TraversalRecord {
 			return open[i].calculateFCost(constraint[target]) < open[j].calculateFCost(constraint[target])
 		})
 	}
-	return nil
+	return 0, nil
 }

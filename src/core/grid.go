@@ -67,16 +67,28 @@ var Allarah = []Arah{
 	bawah,
 }
 
-func arahToString(arah Arah) string {
+func arahToString(simplified bool, arah Arah) string {
 	switch arah {
 	case kiri:
-		return "kiri"
+		if simplified {
+			return "L"
+		}
+		return "Left"
 	case kanan:
-		return "kanan"
+		if simplified {
+			return "R"
+		}
+		return "Right"
 	case bawah:
-		return "bawah"
+		if simplified {
+			return "D"
+		}
+		return "Down"
 	case atas:
-		return "atas"
+		if simplified {
+			return "U"
+		}
+		return "Up"
 	}
 	return "arah invalid"
 }
@@ -259,7 +271,7 @@ func (this *Grid) ToCells() [][]Cell {
 	return cells
 }
 
-func (this *MainGrid) RunAlgo(player *Player, option string) *TraversalRecord {
+func (this *MainGrid) RunAlgo(player *Player, option string) (int, *TraversalRecord) {
 	switch option {
 	case "GBFS":
 		return player.GBFS(this.Endgrid, this.Constraint)
@@ -268,7 +280,7 @@ func (this *MainGrid) RunAlgo(player *Player, option string) *TraversalRecord {
 	case "A*":
 		return player.ASTAR(this.Endgrid, this.Constraint)
 	default:
-		return nil
+		return 0, nil
 	}
 }
 

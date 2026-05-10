@@ -84,7 +84,7 @@ func (u *TraversalRecord) PrintResultPath(player Player, topleft *Grid) {
 		player.move(chosenPath[i].arah)
 		player.Position.tipe = TipeStart
 		println()
-		println("arah: ", arahToString(chosenPath[i].arah))
+		println("arah: ", arahToString(false, chosenPath[i].arah))
 		println("Cost saat ini: ", chosenPath[i].calculateCost())
 		topleft.PrintGrid()
 	}
@@ -92,7 +92,7 @@ func (u *TraversalRecord) PrintResultPath(player Player, topleft *Grid) {
 	player.move(u.arah)
 	player.Position.tipe = TipeStart
 	println()
-	println("arah: ", arahToString(u.arah))
+	println("arah: ", arahToString(false, u.arah))
 	println("Cost saat ini: ", u.calculateCost())
 	topleft.PrintGrid()
 }
@@ -115,5 +115,20 @@ func (this *TraversalRecord) ToCells(player *Player, topleft *Grid) [][][]Cell {
 	player.move(this.arah)
 	player.Position.tipe = TipeStart
 	result = append(result, topleft.ToCells())
+	return result
+}
+
+func (this *TraversalRecord) GetDirectionsAsString(simplified bool) string {
+	parent := this.path
+	var chosenPath []TraversalRecord
+	var result string
+	for parent != nil {
+		chosenPath = append([]TraversalRecord{*parent}, chosenPath...)
+		parent = parent.path
+	}
+	for i := 1; i < len(chosenPath); i++ {
+		result = result + arahToString(true, chosenPath[i].arah)
+	}
+	result = result + arahToString(true, this.arah)
 	return result
 }
