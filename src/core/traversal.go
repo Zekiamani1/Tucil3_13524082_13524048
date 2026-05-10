@@ -49,6 +49,8 @@ func (h TraversalRecord) calculateCost(pilihan int, end *Grid) float64 {
 		totalF = float64(total) + h.grid.calculateEuclideanDistance(end) //1 euclidean hereustic
 	case 2:
 		totalF = float64(total) + h.grid.calculateManhattanDistance(end) //2 manhattan hereustic
+	case 3:
+		totalF = float64(total) + h.grid.calculatechebyshevDistance(end) //2 chebyshev hereustic
 	}
 	return totalF
 }
