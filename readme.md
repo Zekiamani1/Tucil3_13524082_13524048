@@ -1,11 +1,12 @@
-# Tucil 2 Stima Ice Sliding Solver
+<h1 align="center">Tucil 3 Stima Ice Sliding Solver</h1>
 
 ---
-![Bocchi](assets/bocchi.png)
+<p align="center">
+  <img src="assets/bocchi.png" alt="Alt text">
+</p>
 
 <div align="center" id="contributor">
   <strong>
-    <h2>Tucil 2</h2>
     <table align="center">
       <tr align="center">
         <td></td>
